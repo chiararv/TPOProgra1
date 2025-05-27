@@ -65,6 +65,31 @@ def eliminarAccesorios(accesorios,codigo):
     else:
        print(f"No se encontró un accesorio con el código {codigo}.")
 
+def modificarAccesorio(accesorio, codigo):
+    for clave in accesorio.keys():
+        if clave == codigo:
+            activo = input("Ingrese True o False: ").lower()
+            if activo == "true":
+                activo = True
+            else:
+                activo = False
+            nombre = input("Ingrese el nombre del accesorio: ")
+            descripcion = input("Ingrese la descripción del accesorio: ")
+            stock = int(input("Ingrese el stock del accesorio: "))
+            precioUnitario = float(input("Ingrese el precio unitario del accesorio: "))
+            colores = input("Ingrese los colores del accesorio (separados por comas): ").split(',')
+            colores = {f'color{i+1}': color.strip() for i, color in enumerate(colores)}
+            
+            accesorio[codigo] = {
+                'activo': activo,
+                'nombre': nombre,
+                'Descripcion': descripcion,
+                'Stock': stock,
+                'PrecioUnitario': precioUnitario,
+                'Colores': colores
+            }
+            print(f"Accesorio con código {codigo} modificado exitosamente.")
+            return accesorio
 
 
 #----------------------------------------------------------------------------------------------
@@ -335,7 +360,8 @@ def main():
 
                     
                 elif opcionSubmenu == "2":   # Opción 2 del submenú
-                    ...
+                    codigoModificar = input("Ingrese el código del accesorio a modificar: ")
+                    modificarAccesorio(accesorios, codigoModificar)
                 
                 elif opcionSubmenu == "3":   # Opción 3 del submenú
                     codigoEliminar = input("Ingrese el código del accesorio a eliminar: ")

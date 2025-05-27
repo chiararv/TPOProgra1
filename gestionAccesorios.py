@@ -1,19 +1,4 @@
-def altaAccesorio(accesorios,codigo,nombre, descripcion, stock, precioUnitario, colores=None, activo=True):
-    if colores is None:
-        colores = []
-    
-    accesorio = {
-        'activo': activo,
-        'nombre': nombre,
-        'Descripcion': descripcion,
-        'Stock': stock,
-        'PrecioUnitario': precioUnitario,
-        'Colores': colores
-        }
-    accesorios[codigo] = accesorio
-    return accesorios
-    
-    
+
 accesorios = {
     '01': {
         "activo": True,
@@ -147,6 +132,47 @@ accesorios = {
     }
 }
 
+def altaAccesorio(accesorios,codigo,nombre, descripcion, stock, precioUnitario, colores=None, activo=True):
+    if colores is None:
+        colores = []
+    
+    accesorio = {
+        'activo': activo,
+        'nombre': nombre,
+        'Descripcion': descripcion,
+        'Stock': stock,
+        'PrecioUnitario': precioUnitario,
+        'Colores': colores
+        }
+    accesorios[codigo] = accesorio
+    return accesorios
+
+def modificarAccesorio(accesorio, codigo):
+    for clave in accesorio.keys():
+        if clave == codigo:
+            activo = input("Ingrese True o False: ").lower()
+            if activo == "true":
+                activo = True
+            else:
+                activo = False
+            nombre = input("Ingrese el nombre del accesorio: ")
+            descripcion = input("Ingrese la descripción del accesorio: ")
+            stock = int(input("Ingrese el stock del accesorio: "))
+            precioUnitario = float(input("Ingrese el precio unitario del accesorio: "))
+            colores = input("Ingrese los colores del accesorio (separados por comas): ").split(',')
+            colores = {f'color{i+1}': color.strip() for i, color in enumerate(colores)}
+            
+            accesorio[codigo] = {
+                'activo': activo,
+                'nombre': nombre,
+                'Descripcion': descripcion,
+                'Stock': stock,
+                'PrecioUnitario': precioUnitario,
+                'Colores': colores
+            }
+            print(f"Accesorio con código {codigo} modificado exitosamente.")
+            return accesorio
+
 def listarAccesorios(accesorios):
     for codigo, accesorio in accesorios.items():
         print(f"Código: {codigo}")
@@ -200,4 +226,8 @@ listarAccesorios(accesorios)
 
 codigoEliminar = input("Ingrese el código del accesorio a eliminar: ")
 eliminarAccesorios(accesorios, codigoEliminar)
+listarAccesorios(accesorios)
+
+codigoModificar = input("Ingrese el código del accesorio a modificar: ")
+modificarAccesorio(accesorios, codigoModificar)
 listarAccesorios(accesorios)
