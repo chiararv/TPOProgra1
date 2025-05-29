@@ -158,12 +158,12 @@ def modificarCliente(clientes, documento, claves):
             clientes[nuevoDocumento] = cliente
             del clientes[documento]
         elif clave == 'telefonos':
-                telefonos = {f"telefono{i+1}": tel.strip() for i, tel in enumerate(nuevoValor)}
+                telefonos = {f"telefono{i+1}": tel.strip() for i, tel in enumerate(nuevoValor) if tel.strip()}
                 cliente['telefonos'] = telefonos
         else:
             cliente[clave] = nuevoValor
 
-    print(f"Cliente con documento {documento} modificado exitosamente.")
+    print(f"Cliente con documento {cliente['idCliente']} modificado exitosamente.")
     mostrarCliente(cliente, cliente['idCliente'])
     return clientes
 
