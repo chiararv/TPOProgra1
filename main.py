@@ -8,6 +8,9 @@ Descripción:
   Programa para gestionar clientes y accesorios de ski: alta, baja, modificación y listados.
 
 Pendientes:
+  Implementar regex para validar entradas de email y teléfono.
+  Manejar excepciones para entradas inválidas.
+  Implementar persistencia de datos.
 
 -----------------------------------------------------------------------------------------------
 '''
@@ -37,7 +40,7 @@ def obtenerDatosCliente(documento):
     email = input("Ingrese el email del cliente: ")
     fechaNacimiento = input("Ingrese la fecha de nacimiento (YYYY-MM-DD): ")
     telefonosRaw = input("Ingrese los teléfonos del cliente (separados por comas): ").split(',')
-    telefonos = {f"telefono{i+1}": tel.strip() for i, tel in enumerate(telefonosRaw)}
+    telefonos = {f"telefono{i+1}": tel.strip() for i, tel in enumerate(telefonosRaw) if tel.strip()}
     activo = input("¿El cliente está activo? (True/False): ").lower() == 'true'
 
     return {
@@ -88,8 +91,11 @@ def mostrarCliente(cliente, idCliente):
     print(f"Email: {cliente['email']}")
     print(f"Fecha de Nacimiento: {cliente['fechaNacimiento']}")
     print("Teléfonos:")
-    for claveTel, valorTel in cliente['telefonos'].items():
-        print(f"  {claveTel}: {valorTel}")
+
+    if isinstance(cliente['telefonos'], dict) and cliente['telefonos']:
+        for claveTel, valorTel in cliente['telefonos'].items():
+            print(f"  {claveTel}: {valorTel}")
+
     print("-" * 40)
 
 def listarClientes(clientes):
@@ -123,48 +129,67 @@ def eliminarCliente(clientes, documento):
         print(f"No se encontró un cliente con el documento {documento}.")
     return clientes
 
-def modificarCliente(clientes, documento, claves):
+def leerCampo(label, valorActual, parseFn=lambda x: x):
     """
-    Modifica de forma selectiva los campos indicados de un cliente.
-    Si se modifica 'idCliente', actualiza también la clave del dict `clientes`.
+    Muestra un prompt indicando el valor actual.
+    - Si el usuario pulsa ENTER sin escribir nada, devuelve `valorActual`.
+    - En otro caso, aplica `parseFn` a la entrada y devuelve el resultado.
+
+    Args:
+        label: Texto a mostrar antes del prompt.
+        valorActual: Valor que se mantendrá si la entrada está vacía.
+        parseFn: Función que transforma la entrada de cadena
+                            en el tipo requerido (str a bool/int/float/etc).
+
+    Returns:
+        El valor convertido o el valor actual si no se ingresa respuesta.
+    """
+    entrada = input(f"{label} (actual: {valorActual}): ").strip()
+    if entrada == "":
+        return valorActual
+    return parseFn(entrada)
+
+parseBool    = lambda x: x.lower() == "true"
+parseTelefonos = lambda x: {
+    f"telefono{i+1}": t.strip()
+    for i, t in enumerate(x.split(","))
+    if t.strip()
+}
+
+def modificarCliente(clientes, documento):
+    """
+    Modifica los datos de un cliente existente.
+    Si se modifica el 'idCliente', actualiza la clave del dict `clientes`.
     Args:
         clientes (dict): Diccionario de clientes.
         documento (str): Documento del cliente a modificar.
-        claves (list of str): Lista de campos a actualizar, ya normalizados a las claves internas.
     Returns:
         dict: El dict `clientes` actualizado.
     """
-    if documento not in clientes:
-        print(f"No se encontró un cliente con el documento {documento}.")
-        return clientes
+    print("Ingrese datos a modificar, presione ENTER para mantener el valor actual.")
+    datos = clientes[documento]
+  
+    nuevoDoc = leerCampo("Ingrese nuevo documento", datos['idCliente'])
+    if nuevoDoc != datos['idCliente']:
+        datos['idCliente'] = nuevoDoc
+        clientes[nuevoDoc] = datos
+        del clientes[documento]
+        documento = nuevoDoc  
 
-    cliente = clientes[documento]
+    telefonosActual = ", ".join(datos['telefonos'].values())
+    nuevosTel= leerCampo("Teléfonos", telefonosActual, parseTelefonos)
+    if isinstance(nuevosTel, dict):  
+        datos['telefonos'] = nuevosTel 
 
-    for clave in claves:
-        if clave not in cliente:
-            print(f"La clave '{clave}' no existe en el cliente.")
-            continue
-        valorActual = cliente[clave]
-        if clave == 'telefonos':
-            nuevoValor = input(f"Ingrese los teléfonos del cliente separados por comas (actual: {valorActual}): ").split(',')
-        else:
-            nuevoValor = input(f"Ingrese nuevo valor para '{'documento' if clave == 'idCliente' else clave }' (actual: {valorActual}): ")
+    datos['tipoDocumento']  = leerCampo("Tipo de documento",   datos['tipoDocumento'])
+    datos['nombre']        = leerCampo("Nombre",              datos['nombre'])
+    datos['apellido']      = leerCampo("Apellido",            datos['apellido'])
+    datos['email']         = leerCampo("Email",               datos['email'])
+    datos['fechaNacimiento'] = leerCampo("Fecha de nacimiento (YYYY-MM-DD)", datos['fechaNacimiento'])
+    datos['activo']        = leerCampo("¿Está activo? (True/False)", datos['activo'],   parseBool)
 
-        if clave == 'activo':
-            cliente[clave] = nuevoValor.lower() == 'true'
-        elif clave == 'idCliente':
-            nuevoDocumento = nuevoValor
-            cliente['idCliente'] = nuevoValor
-            clientes[nuevoDocumento] = cliente
-            del clientes[documento]
-        elif clave == 'telefonos':
-                telefonos = {f"telefono{i+1}": tel.strip() for i, tel in enumerate(nuevoValor) if tel.strip()}
-                cliente['telefonos'] = telefonos
-        else:
-            cliente[clave] = nuevoValor
-
-    print(f"Cliente con documento {cliente['idCliente']} modificado exitosamente.")
-    mostrarCliente(cliente, cliente['idCliente'])
+    print(f"\nCliente {documento} modificado exitosamente.\n")
+    mostrarCliente(datos, documento)
     return clientes
 
 #----------------------------------------------------------------------------------------------
@@ -274,14 +299,7 @@ def main():
                     if not cliente:
                         print("Documento no encontrado.")
                         continue
-                    # Mostrar claves disponibles
-                    clavesDisp = [ 'documento' if k=='idCliente' else k for k in cliente.keys() ]
-                    print("Opciones a modificar:", ", ".join(clavesDisp))
-
-                    clavesModificarRaw = input("Opciones a modificar (separadas por comas): ").split(',')
-                    # Normalizar 'documento' a 'idCliente'
-                    clavesModificar = ["idCliente" if c.strip().lower()=="documento" else c.strip() for c in clavesModificarRaw]
-                    modificarCliente(clientes, documento, clavesModificar)
+                    modificarCliente(clientes, documento)
                 
                 elif opcionSubmenu == "3":   # Opción 3 del submenú
                     documento = input("Ingrese el documento del cliente a eliminar: ")
