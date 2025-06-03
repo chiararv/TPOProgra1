@@ -155,7 +155,7 @@ def altaAccesorio(accesorios):
             "descripcion": None,
             "stock": None,
             "precioUnitario": None,
-            "colores": {}
+            "colores": None
         }
         parsers = {
             "stock": parseInt,
@@ -264,10 +264,10 @@ def altaRenta(rentas):
             "total":    parseFloat,
             "deposito": parseFloat,
             "cantidad": parseInt,
-            "fechaDevolucion": parseDateTimeToString,
-            "idRenta": parseDateTimeToString
+            "fechaDevolucion": parseDateTimeToString
         }
         rentas[idRenta] = obtenerDatosRegistro(plantilla, parsers)
+        rentas[idRenta]["idRenta"] = parseDateTimeToString(idRenta)
         print(f"Renta {idRenta} registrada exitosamente.")
     return rentas
 
@@ -281,6 +281,7 @@ def bajaRenta(rentas):
     '''
     print("--- Baja de Renta ---")
     idRenta = input("Ingrese ID de Renta a eliminar: ")
+
     if idRenta in rentas:
         del rentas[idRenta]
         print("Renta eliminada.")
@@ -327,11 +328,11 @@ def listarRentas(rentas):
         print("No hay rentas registradas.")
         return
 
-    print(f"{'ID':<5} {'Cliente':<10} {'Días':<5} {'F. Devolución':<20} {'Total':<10} {'Depósito':<10} {'Estado':<12} {'Pago':<13} {'Accesorio':<12} {'Cant.':<8}")
-    print("-" * 112)
+    print(f"{'ID':<20} {'Cliente':<10} {'Días':<5} {'F. Devolución':<20} {'Total':<10} {'Depósito':<10} {'Estado':<12} {'Pago':<13} {'Accesorio':<12} {'Cant.':<8}")
+    print("-" * 128)
 
     for renta in rentas.values():
-        print(f"{renta['idRenta']:<5} {renta['idCliente']:<10} {renta['dias']:<5} {renta['fechaDevolucion']:<20} {renta['total']:<10.2f} {renta['deposito']:<10.2f} {renta['estado']:<12} {renta['metodoPago']:<15} {renta['idAccesorio']:<10} {renta['cantidad']:<6}")
+        print(f"{renta['idRenta']:<20} {renta['idCliente']:<10} {renta['dias']:<5} {renta['fechaDevolucion']:<20} {renta['total']:<10.2f} {renta['deposito']:<10.2f} {renta['estado']:<12} {renta['metodoPago']:<15} {renta['idAccesorio']:<10} {renta['cantidad']:<6}")
 
 def altaCliente(clientes):
     """
@@ -349,20 +350,20 @@ def altaCliente(clientes):
             print("El cliente ya existe. Intente con otro documento.")
             continue
         plantilla = {
-            "idCliente":      documento,   # se carga sin preguntar
             "tipoDocumento":  None,
             "nombre":         None,
             "apellido":       None,
             "email":          None,
             "fechaNacimiento":None,
-            "telefonos":      {},
-            "activo":         True
+            "telefonos":      None,
+            "activo":         None
         }
         parsers = {
             "telefonos": parseTelefonos,
             "activo":    parseBool
         }
         clientes[documento] = obtenerDatosRegistro(plantilla, parsers)
+        clientes[documento]["idCliente"] = documento
         print(f"Cliente {documento} agregado.")
     return clientes
 
