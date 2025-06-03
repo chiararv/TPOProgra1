@@ -1,9 +1,9 @@
 """
 -----------------------------------------------------------------------------------------------
-Título: Gestión de Accesorios de Ski
+Título: Gestión de informe
 Autor: Grupo 3
 
-Descripción: Programa para gestionar clientes y accesorios de ski: alta, baja, modificación y listados.
+Descripción: Programa para gestionar informe  y accesorios de ski: alta, baja, modificación y listados.
 
 Pendientes:
 -----------------------------------------------------------------------------------------------
@@ -229,17 +229,17 @@ def generar_matriz_dinero_por_mes(rentas):
     Returns:
         tuple: (matriz, id_clientes, meses)
           - matriz: Lista de listas con los depósitos sumados
-          - id_clientes: Lista ordenada de ids de clientes (opcional, puedes cambiarlo a otra categoría si prefieres)
+          - id_clientes: Lista ordenada de ids de clientes (opcional, se puede cambiarlo a otra categoría si prefiere incluso)
           - meses: Lista de meses (1-12)
     """
-    # Recolectamos todos los idClientes únicos (para las filas)
+    # Recolecta todos los idClientes únicos (para las filas)
     id_clientes = sorted(set(renta["idCliente"] for renta in rentas.values()))
     meses = list(range(1, 13))
     
-    # Inicializamos la matriz con ceros
+    # Inicializa la matriz con ceros
     matriz = [[0 for _ in meses] for _ in id_clientes]
     
-    # Llenamos la matriz con los depósitos
+    # Llena la matriz con los depósitos
     for renta in rentas.values():
         try:
             mes = int(renta["idRenta"].split('.')[1])
@@ -269,7 +269,7 @@ def mostrar_matriz_dinero(matriz, id_clientes, meses):
     
     # Calcular anchos de columnas
     ancho_id = max(len("Cliente"), max(len(id) for id in id_clientes)) + 2
-    ancho_mes = 10  # Ajustado para valores como "30000.00"
+    ancho_mes = 10  # Ajustado para valores como ej "30000.00"
     
     # Encabezado (usando "Plos" en lugar de "Mes")
     print("Cliente".ljust(ancho_id), end=" || ")
