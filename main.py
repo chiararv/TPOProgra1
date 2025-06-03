@@ -1,4 +1,3 @@
-
 '''
 -----------------------------------------------------------------------------------------------
 Título: Gestión de Accesorios de Ski
@@ -173,7 +172,7 @@ def altaRenta(rentas):
         "idRenta": idRenta,
         "idCliente": idCliente,
         "dias": dias,
-        "fecha Devolucion": fechaDevolucion,
+        "fechaDevolucion": fechaDevolucion,
         "total": total,
         "deposito": deposito,
         "estado": estado,
@@ -207,14 +206,14 @@ def modificarRenta(rentas):
     for clave in renta:
         if clave == "idRenta":
             continue
-        nuevo_valor = input(f"Modificar '{clave}' (actual: {renta[clave]}) - Enter para mantener: ")
-        if nuevo_valor:
+        nuevoValor = input(f"Modificar '{clave}' (actual: {renta[clave]}) - Enter para mantener: ")
+        if nuevoValor:
             if clave in ["dias"]:
-                renta[clave] = int(nuevo_valor)
+                renta[clave] = int(nuevoValor)
             elif clave in ["total", "deposito"]:
-                renta[clave] = float(nuevo_valor)
+                renta[clave] = float(nuevoValor)
             else:
-                renta[clave] = nuevo_valor
+                renta[clave] = nuevoValor
 
     print("Renta modificada con éxito.")
     return rentas
@@ -229,7 +228,7 @@ def listarRentas(rentas):
     print("-" * 112)
 
     for renta in rentas.values():
-        print(f"{renta['idRenta']:<5} {renta['idCliente']:<10} {renta['dias']:<5} {renta['fecha Devolucion']:<20} {renta['total']:<10.2f} {renta['deposito']:<10.2f} {renta['estado']:<12} {renta['metodoPago']:<15} {renta['idAccesorio']:<10} {renta['cantidad']:<6}")
+        print(f"{renta['idRenta']:<5} {renta['idCliente']:<10} {renta['dias']:<5} {renta['fechaDevolucion']:<20} {renta['total']:<10.2f} {renta['deposito']:<10.2f} {renta['estado']:<12} {renta['metodoPago']:<15} {renta['idAccesorio']:<10} {renta['cantidad']:<6}")
 
 
 def obtenerDatosCliente(documento):
@@ -544,12 +543,12 @@ def main():
         }
     }
 
-    Renta = {
+    rentas = {
         "01": {
             "idRenta": "01",
             "idCliente": "01",
             "dias": 10,
-            "fecha Devolucion": "2025.06.10.12.00.00",
+            "fechaDevolucion": "2025.06.10.12.00.00",
             "total": 15000.0,
             "deposito": 20000.0,
             "estado": "ocupado",
@@ -561,7 +560,7 @@ def main():
             "idRenta": "02",
             "idCliente": "02",
             "dias": 5,
-            "fecha Devolucion": "2025.06.05.15.30.00",
+            "fechaDevolucion": "2025.06.05.15.30.00",
             "total": 7500.0,
             "deposito": 10000.0,
             "estado": "pendiente",
@@ -573,7 +572,7 @@ def main():
             "idRenta": "03",
             "idCliente": "03",
             "dias": 7,
-            "fecha Devolucion": "2025.06.12.09.45.00",
+            "fechaDevolucion": "2025.06.12.09.45.00",
             "total": 10500.0,
             "deposito": 15000.0,
             "estado": "finalizado",
@@ -585,7 +584,7 @@ def main():
             "idRenta": "04",
             "idCliente": "04",
             "dias": 3,
-            "fecha Devolucion": "2025.06.03.18.00.00",
+            "fechaDevolucion": "2025.06.03.18.00.00",
             "total": 4500.0,
             "deposito": 5000.0,
             "estado": "cancelado",
@@ -597,7 +596,7 @@ def main():
             "idRenta": "05",
             "idCliente": "05",
             "dias": 15,
-            "fecha Devolucion": "2025.06.20.20.00.00",
+            "fechaDevolucion": "2025.06.20.20.00.00",
             "total": 22500.0,
             "deposito": 30000.0,
             "estado": "ocupado",
@@ -816,13 +815,13 @@ def main():
                 if opcionSubmenu == "0":
                     break
                 elif opcionSubmenu == "1":
-                    Renta = altaRenta(Renta)
+                    rentas = altaRenta(rentas)
                 elif opcionSubmenu == "2":
-                    Renta = bajaRenta(Renta)
+                    rentas = bajaRenta(rentas)
                 elif opcionSubmenu == "3":
-                    Renta = modificarRenta(Renta)
+                    rentas = modificarRenta(rentas)
                 elif opcionSubmenu == "4":
-                    listarRentas(Renta)
+                    listarRentas(rentas)
 
                 input("\nPresione ENTER para volver al menú.")
                 print("\n\n")
