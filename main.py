@@ -115,9 +115,9 @@ def obtenerEtiqueta(clave: str):
         "telefonos":      "Teléfonos (separados por coma)",
         
         # Renta
-        "idRenta":        "ID de Renta",
+        "idRenta":        "ID de Renta (AAAA-MM-DD hh:mm:ss)",
         "dias":           "Cantidad de días",
-        "fechaDevolucion":"Fecha de devolución (AAAA.MM.DD.hh.mm.ss)",
+        "fechaDevolucion":"Fecha de devolución (AAAA-MM-DD hh:mm:ss)",
         "total":          "Total",
         "deposito":       "Depósito",
         "estado":         "Estado",
@@ -264,8 +264,8 @@ def altaRenta(rentas):
             "total":    parseFloat,
             "deposito": parseFloat,
             "cantidad": parseInt,
-            "fechaDevolucion": parseDateTimeToString
-
+            "fechaDevolucion": parseDateTimeToString,
+            "idRenta": parseDateTimeToString
         }
         rentas[idRenta] = obtenerDatosRegistro(plantilla, parsers)
         print(f"Renta {idRenta} registrada exitosamente.")
@@ -456,6 +456,284 @@ def modificarCliente(clientes: dict, documento: str) -> dict:
     mostrarCliente(clienteEditado, nuevoDoc)
     return clientes
 
+def mostrarTablaRenta(rentas):
+    if not rentas:
+        print("No hay rentas que mostrar.")
+        return
+
+    columnas = list(rentas.keys())
+    campos = list(rentas[columnas[0]].keys())
+
+    # Calcular el ancho máximo de cada columna (por campo)
+    anchos = {}
+    anchos["Campo"] = max(len(campo) for campo in campos)
+
+    for col in columnas:
+        anchos[col] = max(len(str(rentas[col][campo])) for campo in campos)
+
+    # Aumentar los espacios por estética, se puede quitar
+    for k in anchos:
+        anchos[k] += 2
+
+    # Encabezado
+    print("Campo".ljust(anchos["Campo"]), end=" || ")
+    for col in columnas:
+        print(col.center(anchos[col]), end=" || ")
+    print()
+
+    # Separador
+    totalAncho = sum(anchos.values()) + (4 * len(columnas)) + 3
+    print("-" * totalAncho)
+
+    # Filas
+    for campo in campos:
+        print(campo.ljust(anchos["Campo"]), end=" || ")
+        for col in columnas:
+            valor = str(rentas[col].get(campo, ""))
+            print(valor.center(anchos[col]), end=" || ")
+        print()
+
+
+def filtrarRentasPorMes(rentas, mes):
+    """
+    Filtra las rentas por un mes específico (1-12).
+    
+    Args:
+        rentas (dict): Diccionario con todas las rentas
+        mes (int): Mes a filtrar (1-12)
+    
+    Returns:
+        dict: Diccionario con las rentas del mes especificado
+    """
+    rentasFiltradas = {}
+    
+    for key, datos in rentas.items():
+        try:
+            # mes de idRenta (formato: YYYY.MM.DD.HH.MM.SS)
+            fechaParts = datos["idRenta"].split('.')
+            rentaMes = int(fechaParts[1])  # El mes es el segundo elemento
+            
+            if rentaMes == mes:
+                rentasFiltradas[key] = datos
+        except Exception as e:
+            print(f"Error en renta {key}: {e}")
+    
+    return rentasFiltradas
+
+def informeMesEspecifico(rentas):
+    """
+    Muestra un informe de rentas para un mes específico.
+    
+    Args:
+        rentas (dict): Diccionario con todas las rentas
+    """
+    while True:
+        try:
+            print("\n--- Informe por Mes Específico ---")
+            mes = int(input("Ingrese el mes a consultar (1-12): "))
+            
+            if 1 <= mes <= 12:
+                rentasFiltradas = filtrarRentasPorMes(rentas, mes)
+                
+                if rentasFiltradas:
+                    print(f"\nRentas del mes {mes}:")
+                    mostrarTablaRenta(rentasFiltradas)
+                else:
+                    print(f"No hay rentas registradas en el mes {mes}.")
+                
+                break
+            else:
+                print("El mes debe estar entre 1 y 12. Intente nuevamente.")
+        except ValueError:
+            print("Por favor ingrese un número válido (1-12).")
+
+
+def filtrarRentasMesActual(rentas):
+    """
+    Filtra las rentas del mes actual.
+    
+    Args:
+        rentas (dict): Diccionario con todas las rentas
+    
+    Returns:
+        dict: Diccionario con las rentas del mes actual
+    """
+    rentasFiltradas = {}
+    mesActual = datetime.now().month  # Obtenemos el mes actual (1-12)
+    
+    for key, datos in rentas.items():
+        try:
+            # Extraemos el mes de idRenta (formato: YYYY.MM.DD.HH.MM.SS)
+            fechaParts = datos["idRenta"].split('.')
+            rentaMes = int(fechaParts[1])  # El mes es el segundo elemento
+            
+            if rentaMes == mesActual:
+                rentasFiltradas[key] = datos
+        except Exception as e:
+            print(f"Error en renta {key}: {e}")
+    
+    return rentasFiltradas
+
+def informeMesActual(rentas):
+    """
+    Muestra un informe de rentas para el mes actual.
+    
+    Args:
+        rentas (dict): Diccionario con todas las rentas
+    """
+    rentasFiltradas = filtrarRentasMesActual(rentas)
+    mesActual = datetime.now().month
+    
+    if rentasFiltradas:
+        print(f"\nRentas del mes actual ({mesActual}):")
+        mostrarTablaRenta(rentasFiltradas)
+    else:
+        print(f"No hay rentas registradas en el mes actual ({mesActual}).")
+
+
+def recuentoAccesoriosPorMes(rentas):
+    """
+    Genera un recuento de accesorios rentados por mes.
+    
+    Args:
+        rentas (dict): Diccionario con todas las rentas
+    
+    Returns:
+        dict: Diccionario con el formato {idAccesorio: {mes: cantidad_total}}
+    """
+    recuento = {}
+    
+    for renta in rentas.values():
+        try:
+            # Extraer mes de idRenta (formato: YYYY.MM.DD.HH.MM.SS)
+            mes = int(renta["idRenta"].split('.')[1])
+            idAccesorio = renta["idAccesorio"]
+            cantidad = int(renta["cantidad"])
+            
+            # Inicializar estructura si no existe
+            if idAccesorio not in recuento:
+                recuento[idAccesorio] = {m: 0 for m in range(1, 13)}
+            
+            recuento[idAccesorio][mes] += cantidad
+            
+        except Exception as e:
+            print(f"Error procesando renta {renta.get('idRenta', '')}: {e}")
+    
+    return recuento
+
+def mostrarRecuentoAccesorios(recuento):
+    """
+    Muestra el recuento de accesorios por mes en formato de tabla.
+    
+    Args:
+        recuento (dict): Diccionario con el recuento de accesorios por mes
+    """
+    if not recuento:
+        print("No hay datos de accesorios para mostrar.")
+        return
+    
+    # Obtener todos los idAccesorios y ordenarlos
+    idAccesorios = sorted(recuento.keys())
+    meses = list(range(1, 13))
+    
+    # Calcular anchos de columnas
+    anchoId = max(len("Accesorio"), max(len(id) for id in idAccesorios)) + 2
+    anchoMes = 8  # Suficiente para "Mes X" y los valores
+    
+    # Encabezado
+    print("Accesorio".ljust(anchoId), end=" || ")
+    for mes in meses:
+        print(f"Mes {mes}".center(anchoMes), end=" || ")
+    print()
+    
+    # Separador
+    totalAncho = anchoId + (len(meses) * (anchoMes + 4)) + 3
+    print("-" * totalAncho)
+    
+    # Filas de datos
+    for idAccesorio in idAccesorios:
+        print(idAccesorio.ljust(anchoId), end=" || ")
+        for mes in meses:
+            cantidad = recuento[idAccesorio].get(mes, 0)
+            print(str(cantidad).center(anchoMes), end=" || ")
+        print()
+
+def generarMatrizDineroPorMes(rentas):
+    """
+    Genera una matriz de depósitos por mes.
+    
+    Args:
+        rentas (dict): Diccionario con todas las rentas
+    
+    Returns:
+        tuple: (matriz, idClientes, meses)
+          - matriz: Lista de listas con los depósitos sumados
+          - idClientes: Lista ordenada de ids de clientes
+          - meses: Lista de meses (1-12)
+    """
+    # Recolecta todos los idClientes únicos (para las filas)
+    idClientes = sorted(set(renta["idCliente"] for renta in rentas.values()))
+    meses = list(range(1, 13))
+    
+    # Inicializa la matriz con ceros
+    matriz = [[0 for _ in meses] for _ in idClientes]
+    
+    # Llena la matriz con los depósitos
+    for renta in rentas.values():
+        try:
+            mes = int(renta["idRenta"].split('.')[1])
+            idCliente = renta["idCliente"]
+            deposito = float(renta["deposito"])
+            
+            fila = idClientes.index(idCliente)
+            columna = meses.index(mes)
+            matriz[fila][columna] += deposito
+        except Exception as e:
+            print(f"Error procesando renta {renta.get('idRenta', '')}: {e}")
+        
+    # Añadir fila de subtotales
+    subtotales = [sum(fila[mes] for fila in matriz) for mes in range(len(meses))]
+    matriz.append(subtotales)
+    idClientes.append("SUBTOTAL")  # Etiqueta para la fila adicional
+    
+    return matriz, idClientes, meses
+
+def mostrarMatrizDinero(matriz, idClientes, meses):
+    """
+    Muestra la matriz de depósitos por mes en formato de tabla.
+    """
+    if not matriz or not idClientes:
+        print("No hay datos de depósitos para mostrar.")
+        return
+    
+    # Calcular anchos de columnas
+    anchoId = max(len("Cliente"), max(len(id) for id in idClientes)) + 2
+    anchoMes = 10  # Ajustado para valores como ej "30000.00"
+    
+    # Encabezado (usando "Plos" en lugar de "Mes")
+    print("Cliente".ljust(anchoId), end=" || ")
+    for mes in meses:
+        print(f"Plos {mes}".center(anchoMes), end=" || ")
+    print()
+    
+    # Separador
+    totalAncho = anchoId + (len(meses) * (anchoMes + 4)) + 3
+    print("-" * totalAncho)
+    
+    # Filas de datos
+    for i, idCliente in enumerate(idClientes):
+        print(idCliente.ljust(anchoId), end=" || ")
+        for j, mes in enumerate(meses):
+            # Formatear todos los valores con 2 decimales y ancho fijo
+            valor = matriz[i][j]
+            dinero = f"{valor:.2f}" if valor != 0 else "0.00"
+            # Asegurar que SUBTOTAL tenga el mismo formato
+            if idCliente == "SUBTOTAL":
+                dinero = dinero.center(anchoMes)  # Forzar alineación central
+            print(dinero.center(anchoMes), end=" || ")
+        print()
+
+
 #----------------------------------------------------------------------------------------------
 # CUERPO PRINCIPAL
 #----------------------------------------------------------------------------------------------
@@ -602,7 +880,7 @@ def main():
 
     rentas = {
         "01": {
-            "idRenta": "01",
+            "idRenta": "2025.06.03.18.00.00",
             "idCliente": "01",
             "dias": 10,
             "fechaDevolucion": "2025.06.10.12.00.00",
@@ -614,7 +892,7 @@ def main():
             "cantidad": "20"
         },
         "02": {
-            "idRenta": "02",
+            "idRenta": "2025.06.04.18.00.00",
             "idCliente": "02",
             "dias": 5,
             "fechaDevolucion": "2025.06.05.15.30.00",
@@ -626,7 +904,7 @@ def main():
             "cantidad": "5"
         },
         "03": {
-            "idRenta": "03",
+            "idRenta": "2025.06.05.18.00.00",
             "idCliente": "03",
             "dias": 7,
             "fechaDevolucion": "2025.06.12.09.45.00",
@@ -638,7 +916,7 @@ def main():
             "cantidad": "10"
         },
         "04": {
-            "idRenta": "04",
+            "idRenta": "2025.06.06.18.00.00",
             "idCliente": "04",
             "dias": 3,
             "fechaDevolucion": "2025.06.03.18.00.00",
@@ -650,7 +928,7 @@ def main():
             "cantidad": "2"
         },
         "05": {
-            "idRenta": "05",
+            "idRenta": "2025.06.07.18.00.00",
             "idCliente": "05",
             "dias": 15,
             "fechaDevolucion": "2025.06.20.20.00.00",
@@ -802,10 +1080,8 @@ def main():
                     break # No sale del programa, sino que vuelve al menú anterior
                 
                 elif opcionSubmenu == "1":   # Opción 1 del submenú
-                    while True:
-                        # Agregar el accesorio al diccionario
-                        altaAccesorio(accesorios)
-                        print("Accesorio agregado exitosamente.")
+                    altaAccesorio(accesorios)
+                    print("Accesorio agregado exitosamente.")
 
                     
                 elif opcionSubmenu == "2":   # Opción 2 del submenú
@@ -867,7 +1143,44 @@ def main():
                 print("\n\n")
 
         elif opcionMenuPrincipal == "4":
-            ...
+            while True:
+                while True:
+                    opciones = 5
+                    print()
+                    print("---------------------------")
+                    print("MENÚ PRINCIPAL > Informe")
+                    print("---------------------------")
+                    print("[1] Informe Total")
+                    print("[2] Informe del ultimo Mes")
+                    print("[3] Informe de un Mes")
+                    print("[4] recuento accesorios por mes")
+                    print("[5] mostrar dinero por mes")
+                    print("---------------------------")
+                    print("[0] Volver al menú anterior")
+                    print("---------------------------")
+                    print()
+
+                    opcionSubmenu = input("Seleccione una opción: ")
+                    if opcionSubmenu in [str(i) for i in range(0, opciones + 1)]:
+                        break
+                    else:
+                        input("Opción inválida. Presione ENTER para volver a seleccionar.")
+                print()
+
+                if opcionSubmenu == "0":
+                    break
+                elif opcionSubmenu == "1":
+                    mostrarTablaRenta(rentas)
+                elif opcionSubmenu == "2":
+                    informeMesActual(rentas)
+                elif opcionSubmenu == "3":
+                    informeMesEspecifico(rentas)
+                elif opcionSubmenu == "4":
+                    recuento = recuentoAccesoriosPorMes(rentas)
+                    mostrarRecuentoAccesorios(recuento)
+                elif opcionSubmenu == "5":
+                    matriz, ids, meses = generarMatrizDineroPorMes(rentas)
+                    mostrarMatrizDinero(matriz, ids, meses)
 
         elif opcionMenuPrincipal == "5":
             ...
@@ -876,5 +1189,4 @@ def main():
             input("\nPresione ENTER para volver al menú.")
             print("\n\n")
 
-if __name__ == '__main__':      
-  main()
+main()
