@@ -18,36 +18,58 @@ Pendientes:
 #----------------------------------------------------------------------------------------------
 # MÓDULOS
 #----------------------------------------------------------------------------------------------
-
+from datetime import datetime
 
 #----------------------------------------------------------------------------------------------
 # FUNCIONES
 #----------------------------------------------------------------------------------------------
 
-def obtenerNuevoValor(etiqueta, valorActual, parseFn=lambda x: x):
+def obtenerDatosRegistro(plantilla, parsers=None):
     """
-    Muestra un prompt indicando el valor actual.
-    - Si el usuario pulsa ENTER sin escribir nada, devuelve `valorActual`.
-    - En otro caso, aplica `parseFn` a la entrada y devuelve el resultado.
+    Pide por consola los valores de cada campo en 'plantilla' y devuelve
+    un nuevo diccionario completo.
 
     Args:
-        etiqueta: Texto a mostrar antes del prompt.
-        valorActual: Valor que se mantendrá si la entrada está vacía.
-        parseFn: Función que transforma la entrada de cadena
-                            en el tipo requerido (str a bool/int/float/etc).
+        plantilla (dict): claves = nombre de campo; valores = valor actual
+                          (None si es un registro nuevo).
+        parsers  (dict):  campo -> función de conversión (opcional).
 
     Returns:
-        El valor convertido o el valor actual si no se ingresa respuesta.
+        dict: Registro con todos los campos completados.
     """
-    entrada = input(f"{etiqueta} (actual: {valorActual}): ").strip()
-    if entrada:
-        return parseFn(entrada)
-    else:
-        return valorActual
+    if parsers is None:
+        parsers = {}
+
+    nuevo = {}
+    for campo, valorActual in plantilla.items():
+        etiqueta = obtenerEtiqueta(campo)
+
+        # Para sub-dicts como 'telefonos' o 'colores' mostramos los valores separados por coma
+        if isinstance(valorActual, dict):
+            valorMostrado = ", ".join(valorActual.values())
+        else:
+            valorMostrado = valorActual if valorActual is not None else ""
+
+        if valorActual is None:                       # Alta
+            entrada = input(f"{etiqueta}: ").strip()
+        else:                                         # Modificación
+            entrada = input(f"{etiqueta} (actual: {valorMostrado}) ➜ ").strip()
+
+        # Elegir valor a guardar
+        if entrada == "" and valorActual is not None:
+            nuevoValor = valorActual                  # ENTER mantiene el valor actual
+        else:
+            parseFn = parsers.get(campo, lambda x: x)
+            nuevoValor = parseFn(entrada)
+
+        nuevo[campo] = nuevoValor
+
+    return nuevo
 
 def parseBool(x):
     """convierte string a boolean"""
     return x.lower() == "true"
+
 def parseInt(x): 
     """convierte string a entero"""
     return int(x)
@@ -56,17 +78,20 @@ def parseFloat(x):
     """convierte string a float"""
     return float(x)
 
+def parseDateTimeToString(x):
+    """convierte string a fecha y hora en formato 'AAAA.MM.DD.hh.mm.ss'"""
+    dt = datetime.strptime(x, "%Y-%m-%d %H:%M:%S")  
+    return dt.strftime("%Y.%m.%d.%H.%M.%S")
+
 def parseTelefonos(x):
     """convierte números de teléfono separados por coma a un diccionario"""
-    return {
-        f"telefono{i+1}": t.strip()
-        for i, t in enumerate(x.split(","))
-        if t.strip()
-    }
+    telefonosLimpios = [t.strip() for t in x.split(',') if t.strip()]
+    return {f"telefono{i + 1}": tel for i, tel in enumerate(telefonosLimpios)}
+
 def parseColors(texto: str) -> dict:
-    """Convierte 'rojo, azul' ➜ {'color1': 'rojo', 'color2': 'azul'}."""
-    return {f"color{i+1}": c.strip()
-            for i, c in enumerate(texto.split(",")) if c.strip()}
+    """convierte colores separados por coma a un diccionario"""
+    coloresLimpios = [c.strip() for c in texto.split(',') if c.strip()]
+    return {f"color{i + 1}": col for i, col in enumerate(coloresLimpios)}
 
 def obtenerEtiqueta(clave: str):
     '''
@@ -108,34 +133,38 @@ def obtenerEtiqueta(clave: str):
     }
     return etiquetas.get(clave, clave.capitalize())
 
-
-def altaAccesorio(accesorios,codigo,nombre, descripcion, stock, precioUnitario, colores=None, activo=True):
+def altaAccesorio(accesorios):
     '''
-        Agrega un accesorio al diccionario de accesorios.
+        Agrega uno o varios accesorios al diccionario de accesorios.
             Parámetros:
                 accesorios (dict):
-                codigo (str)
-                nombre (str)
-                descripcion (str)
-                stock (int)
-                precioUnitario (float)
-                colores (dict, opcional)
-                activo (bool, opcional)
             Retorna:
                 dict: El diccionario de accesorios actualizado.
     '''
-    if colores is None:
-        colores = []
-    
-    accesorio = {
-        'activo': activo,
-        'nombre': nombre,
-        'descripcion': descripcion,
-        'stock': stock,
-        'precioUnitario': precioUnitario,
-        'colores': colores
+    while True:
+        codigo = input("Ingrese el código del accesorio (o -1 para terminar): ")
+        if codigo == '-1':
+            break
+        if codigo in accesorios:
+            print("ERROR: Ya existe un accesorio con ese código.")
+            continue
+
+        plantilla = {
+            "activo": None,
+            "nombre": None,
+            "descripcion": None,
+            "stock": None,
+            "precioUnitario": None,
+            "colores": {}
         }
-    accesorios[codigo] = accesorio
+        parsers = {
+            "stock": parseInt,
+            "precioUnitario": parseFloat,
+            "colores": parseColors
+        }
+        
+        accesorios[codigo] = obtenerDatosRegistro(plantilla, parsers)
+        print(f"Accesorio con código {codigo} agregado.")
     return accesorios
 
 def listarAccesorios(accesorios):
@@ -147,7 +176,7 @@ def listarAccesorios(accesorios):
     for codigo, accesorio in accesorios.items():
         print(f"Código: {codigo}")
         print(f"Activo: {accesorio['activo']}")
-        if accesorio['activo'] == False:
+        if not accesorio['activo']:
             print("El accesorio no está activo.")
             print("-" * 40)
             continue
@@ -169,13 +198,12 @@ def eliminarAccesorios(accesorios,codigo):
         Retorna:
             dict: El diccionario de accesorios actualizado.
     '''
-    for clave in accesorios.keys():
-        if clave == codigo:
-            del accesorios[codigo]
-            print(f"Accesorio con código {codigo} eliminado exitosamente.")
-            return accesorios
+    if codigo in accesorios:
+        del accesorios[codigo]
+        print(f"Accesorio con código {codigo} eliminado exitosamente.")
     else:
-       print(f"No se encontró un accesorio con el código {codigo}.")
+        print(f"No se encontró un accesorio con el código {codigo}.")
+    return accesorios
 
 def modificarAccesorio(accesorios: dict, codigo: str) -> dict:
     '''
@@ -191,7 +219,6 @@ def modificarAccesorio(accesorios: dict, codigo: str) -> dict:
         return accesorios
 
     print("Ingrese datos a modificar. ENTER mantiene el valor actual.\n")
-    datos = accesorios[codigo]
 
     parsers = {
         "activo":         parseBool,
@@ -199,60 +226,49 @@ def modificarAccesorio(accesorios: dict, codigo: str) -> dict:
         "precioUnitario": parseFloat,
         "colores":        parseColors,
     }
-
-    for campo, valorActual in datos.items():
-        if campo == "codigo":
-            continue
-
-        valorMostrado = (
-            ", ".join(valorActual.values()) if campo == "colores" else valorActual
-        )
-        parseFn = parsers.get(campo, lambda x: x)
-        datos[campo] = obtenerNuevoValor(obtenerEtiqueta(campo),
-                                 valorMostrado,
-                                 parseFn)
-
+    accesorios[codigo] = obtenerDatosRegistro(accesorios[codigo], parsers)
     print(f"\nAccesorio con código {codigo} modificado exitosamente.\n")
     return accesorios
 
-
 def altaRenta(rentas):
     '''
-        Agrega una renta al diccionario de rentas.
+        Agrega una o varias rentas al diccionario de rentas.
         Parámetros:
             rentas (dict): Diccionario de rentas.
         Retorna:
             dict: El diccionario de rentas actualizado.
     '''
     print("--- Alta de Renta ---")
-    idRenta = input("Ingrese ID de Renta: ")
-    if idRenta in rentas:
-        print("ERROR: Ya existe una renta con ese ID.")
-        return rentas
+    while True:
+        idRenta = input("Ingrese ID de Renta (o -1 para terminar): ")
+        if idRenta == '-1':
+            break
+        if idRenta in rentas:
+            print("ERROR: Ya existe una renta con ese ID.")
+            continue
 
-    idCliente = input("Ingrese ID de Cliente: ")
-    dias = int(input("Ingrese cantidad de días: "))
-    fechaDevolucion = input("Ingrese fecha de devolución (AAAA.MM.DD.hh.mm.ss): ")
-    total = float(input("Ingrese total: "))
-    deposito = float(input("Ingrese depósito: "))
-    estado = input("Ingrese estado: ")
-    metodoPago = input("Ingrese método de pago: ")
-    idAccesorio = input("Ingrese ID de Accesorio: ")
-    cantidad = input("Ingrese cantidad: ")
+        plantilla = {
+            "idCliente":       None,
+            "dias":            None,
+            "fechaDevolucion": None,
+            "total":           None,
+            "deposito":        None,
+            "estado":          None,
+            "metodoPago":      None,
+            "idAccesorio":     None,
+            "cantidad":        None
+        }
 
-    rentas[idRenta] = {
-        "idRenta": idRenta,
-        "idCliente": idCliente,
-        "dias": dias,
-        "fechaDevolucion": fechaDevolucion,
-        "total": total,
-        "deposito": deposito,
-        "estado": estado,
-        "metodoPago": metodoPago,
-        "idAccesorio": idAccesorio,
-        "cantidad": cantidad
-    }
-    print("Renta registrada exitosamente.")
+        parsers = {
+            "dias":     parseInt,
+            "total":    parseFloat,
+            "deposito": parseFloat,
+            "cantidad": parseInt,
+            "fechaDevolucion": parseDateTimeToString
+
+        }
+        rentas[idRenta] = obtenerDatosRegistro(plantilla, parsers)
+        print(f"Renta {idRenta} registrada exitosamente.")
     return rentas
 
 def bajaRenta(rentas):
@@ -287,7 +303,6 @@ def modificarRenta(rentas):
         print("ERROR: No se encontró una renta con ese ID.")
         return rentas
 
-    renta = rentas[idRenta]
     print("Ingrese nuevos valores. ENTER mantiene el actual.\n")
 
     parsers = {
@@ -296,11 +311,7 @@ def modificarRenta(rentas):
         "deposito": parseFloat,
     }
 
-    for clave, valorActual in renta.items():
-        if clave == "idRenta":
-            continue
-        parseFn = parsers.get(clave, lambda x: x)
-        renta[clave] = obtenerNuevoValor(obtenerEtiqueta(clave), valorActual, parseFn)
+    rentas[idRenta] = obtenerDatosRegistro(rentas[idRenta], parsers)
 
     print(f"\nRenta {idRenta} modificada exitosamente.\n")
     return rentas
@@ -322,36 +333,6 @@ def listarRentas(rentas):
     for renta in rentas.values():
         print(f"{renta['idRenta']:<5} {renta['idCliente']:<10} {renta['dias']:<5} {renta['fechaDevolucion']:<20} {renta['total']:<10.2f} {renta['deposito']:<10.2f} {renta['estado']:<12} {renta['metodoPago']:<15} {renta['idAccesorio']:<10} {renta['cantidad']:<6}")
 
-def obtenerDatosCliente(documento):
-    """
-    Solicita por consola los datos de un cliente y devuelve un diccionario con su información.
-    Args:
-        documento (str): DNI u otro identificador del cliente.
-    Returns:
-        dict: Diccionario con las claves:
-              idCliente, tipoDocumento, nombre, apellido, email,
-              fechaNacimiento, telefonos (dict) y activo (bool).
-    """
-    tipoDocumento = input("Ingrese el tipo de documento (DNI, Pasaporte, etc.): ")
-    nombre = input("Ingrese el nombre del cliente: ")
-    apellido = input("Ingrese el apellido del cliente: ")
-    email = input("Ingrese el email del cliente: ")
-    fechaNacimiento = input("Ingrese la fecha de nacimiento (YYYY-MM-DD): ")
-    telefonosRaw = input("Ingrese los teléfonos del cliente (separados por comas): ").split(',')
-    telefonos = {f"telefono{i+1}": tel.strip() for i, tel in enumerate(telefonosRaw) if tel.strip()}
-    activo = input("¿El cliente está activo? (True/False): ").lower() == 'true'
-
-    return {
-        "idCliente": documento,
-        "tipoDocumento": tipoDocumento,
-        "nombre": nombre,
-        "apellido": apellido,
-        "email": email,
-        "fechaNacimiento": fechaNacimiento,
-        "telefonos": telefonos,
-        "activo": activo
-    }
-
 def altaCliente(clientes):
     """
     Agrega uno o varios clientes al dict `clientes`, pidiendo datos por consola.
@@ -367,8 +348,21 @@ def altaCliente(clientes):
         if documento in clientes:
             print("El cliente ya existe. Intente con otro documento.")
             continue
-        cliente = obtenerDatosCliente(documento)
-        clientes[documento] = cliente
+        plantilla = {
+            "idCliente":      documento,   # se carga sin preguntar
+            "tipoDocumento":  None,
+            "nombre":         None,
+            "apellido":       None,
+            "email":          None,
+            "fechaNacimiento":None,
+            "telefonos":      {},
+            "activo":         True
+        }
+        parsers = {
+            "telefonos": parseTelefonos,
+            "activo":    parseBool
+        }
+        clientes[documento] = obtenerDatosRegistro(plantilla, parsers)
         print(f"Cliente {documento} agregado.")
     return clientes
 
@@ -424,50 +418,42 @@ def eliminarCliente(clientes, documento):
         print(f"No se encontró un cliente con el documento {documento}.")
     return clientes
 
+
 def modificarCliente(clientes: dict, documento: str) -> dict:
     """
     Modifica los datos de un cliente existente.
-    Si se cambia 'idCliente', actualiza la clave principal del dict `clientes`.
-
-    Args:
-        clientes (dict): Diccionario global de clientes.
-        documento (str): Documento (clave) del cliente a modificar.
-
-    Returns:
-        dict: El mismo dict `clientes` actualizado.
+    Si se cambia 'idCliente', actualiza la clave principal en `clientes`.
+    Parámetros:
+        clientes (dict): Diccionario de clientes.
+        documento (str): Documento del cliente a modificar.
+    Retorna:
+        dict: El dict `clientes` actualizado.
     """
 
     print("Ingrese datos a modificar. ENTER mantiene el valor actual.\n")
-    cliente = clientes[documento]
 
     parsers = {
         "telefonos": parseTelefonos,
         "activo":    parseBool,
     }
 
-    for clave, valorActual in list(cliente.items()):
-        valorActual = (
-            ", ".join(valorActual.values()) if clave == "telefonos" else valorActual
-        )
+    clienteActual   = clientes[documento]
+    clienteEditado  = obtenerDatosRegistro(clienteActual, parsers)
 
-        parseFn = parsers.get(clave, lambda x: x)
-        nuevoValor = obtenerNuevoValor(obtenerEtiqueta(clave),
-                               valorActual,
-                               parseFn)
+    nuevoDoc = clienteEditado["idCliente"]
 
-        if clave == "telefonos" and isinstance(nuevoValor, dict):
-            cliente[clave] = nuevoValor
-        else:
-            cliente[clave] = nuevoValor
+    if nuevoDoc != documento:
+        if nuevoDoc in clientes:
+            print(f"ERROR: ya existe un cliente con documento {nuevoDoc}.")
+            return clientes          
+        del clientes[documento]
+        clientes[nuevoDoc] = clienteEditado
+        print(f"\nDocumento actualizado de {documento} ➜ {nuevoDoc}.\n")
+    else:
+        clientes[documento] = clienteEditado
+        print(f"\nCliente {documento} modificado exitosamente.\n")
 
-        # Si cambió idCliente, mover la entrada en el dict raíz
-        if clave == "idCliente" and nuevoValor != documento:
-            clientes[nuevoValor] = cliente
-            del clientes[documento]
-            documento = nuevoValor 
-
-    print(f"\nCliente {documento} modificado exitosamente.\n")
-    mostrarCliente(cliente, documento)
+    mostrarCliente(clienteEditado, nuevoDoc)
     return clientes
 
 #----------------------------------------------------------------------------------------------
@@ -817,26 +803,8 @@ def main():
                 
                 elif opcionSubmenu == "1":   # Opción 1 del submenú
                     while True:
-                        # Ingresar accesorio y el  -1 para terminar
-                        codigo = input("Ingrese el código del accesorio (o '-1' para terminar): ")
-                        if codigo == '-1':
-                            break
-                        while codigo in accesorios:
-                            print("El accesorio ya existe. No se puede agregar.")
-                            codigo = input("Ingrese un nuevo código para el accesorio: ")
-                        activo = input("Ingrese True o False: ").lower()
-                        if activo == "true":
-                            activo = True
-                        else:
-                            activo = False
-                        nombre = input("Ingrese el nombre del accesorio: ")
-                        descripcion = input("Ingrese la descripción del accesorio: ")
-                        stock = int(input("Ingrese el stock del accesorio: "))
-                        precioUnitario = float(input("Ingrese el precio unitario del accesorio: "))
-                        colores = input("Ingrese los colores del accesorio (separados por comas): ").split(',')
-                        colores = {f'color{i+1}': color.strip() for i, color in enumerate(colores)}
                         # Agregar el accesorio al diccionario
-                        altaAccesorio(accesorios, codigo,nombre, descripcion, stock, precioUnitario, colores, activo)
+                        altaAccesorio(accesorios)
                         print("Accesorio agregado exitosamente.")
 
                     
@@ -886,6 +854,7 @@ def main():
                 if opcionSubmenu == "0":
                     break
                 elif opcionSubmenu == "1":
+ 
                     rentas = altaRenta(rentas)
                 elif opcionSubmenu == "2":
                     rentas = bajaRenta(rentas)
@@ -907,5 +876,5 @@ def main():
             input("\nPresione ENTER para volver al menú.")
             print("\n\n")
 
-
-main()
+if __name__ == '__main__':      
+  main()
