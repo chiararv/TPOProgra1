@@ -151,6 +151,149 @@ def informe_mes_actual(rentas):
     else:
         print(f"No hay rentas registradas en el mes actual ({mes_actual}).")
 
+
+def recuento_accesorios_por_mes(rentas):
+    """
+    Genera un recuento de accesorios rentados por mes.
+    
+    Args:
+        rentas (dict): Diccionario con todas las rentas
+    
+    Returns:
+        dict: Diccionario con el formato {idAccesorio: {mes: cantidad_total}}
+    """
+    recuento = {}
+    
+    for renta in rentas.values():
+        try:
+            # Extraer mes de idRenta (formato: YYYY.MM.DD.HH.MM.SS)
+            mes = int(renta["idRenta"].split('.')[1])
+            id_accesorio = renta["idAccesorio"]
+            cantidad = int(renta["cantidad"])
+            
+            # Inicializar estructura si no existe
+            if id_accesorio not in recuento:
+                recuento[id_accesorio] = {m: 0 for m in range(1, 13)}
+            
+            # Sumar cantidad al mes correspondiente
+            recuento[id_accesorio][mes] += cantidad
+            
+        except Exception as e:
+            print(f"Error procesando renta {renta.get('idRenta', '')}: {e}")
+    
+    return recuento
+
+def mostrar_recuento_accesorios(recuento):
+    """
+    Muestra el recuento de accesorios por mes en formato de tabla.
+    
+    Args:
+        recuento (dict): Diccionario con el recuento de accesorios por mes
+    """
+    if not recuento:
+        print("No hay datos de accesorios para mostrar.")
+        return
+    
+    # Obtener todos los idAccesorios y ordenarlos
+    id_accesorios = sorted(recuento.keys())
+    meses = list(range(1, 13))
+    
+    # Calcular anchos de columnas
+    ancho_id = max(len("Accesorio"), max(len(id) for id in id_accesorios)) + 2
+    ancho_mes = 8  # Suficiente para "Mes X" y los valores
+    
+    # Encabezado
+    print("Accesorio".ljust(ancho_id), end=" || ")
+    for mes in meses:
+        print(f"Mes {mes}".center(ancho_mes), end=" || ")
+    print()
+    
+    # Separador
+    total_ancho = ancho_id + (len(meses) * (ancho_mes + 4)) + 3
+    print("-" * total_ancho)
+    
+    # Filas de datos
+    for id_accesorio in id_accesorios:
+        print(id_accesorio.ljust(ancho_id), end=" || ")
+        for mes in meses:
+            cantidad = recuento[id_accesorio].get(mes, 0)
+            print(str(cantidad).center(ancho_mes), end=" || ")
+        print()
+def generar_matriz_dinero_por_mes(rentas):
+    """
+    Genera una matriz de depósitos por mes.
+    
+    Args:
+        rentas (dict): Diccionario con todas las rentas
+    
+    Returns:
+        tuple: (matriz, id_clientes, meses)
+          - matriz: Lista de listas con los depósitos sumados
+          - id_clientes: Lista ordenada de ids de clientes (opcional, puedes cambiarlo a otra categoría si prefieres)
+          - meses: Lista de meses (1-12)
+    """
+    # Recolectamos todos los idClientes únicos (para las filas)
+    id_clientes = sorted(set(renta["idCliente"] for renta in rentas.values()))
+    meses = list(range(1, 13))
+    
+    # Inicializamos la matriz con ceros
+    matriz = [[0 for _ in meses] for _ in id_clientes]
+    
+    # Llenamos la matriz con los depósitos
+    for renta in rentas.values():
+        try:
+            mes = int(renta["idRenta"].split('.')[1])
+            id_cliente = renta["idCliente"]
+            deposito = float(renta["deposito"])
+            
+            fila = id_clientes.index(id_cliente)
+            columna = meses.index(mes)
+            matriz[fila][columna] += deposito
+        except Exception as e:
+            print(f"Error procesando renta {renta.get('idRenta', '')}: {e}")
+        
+    # Añadir fila de subtotales
+    subtotales = [sum(fila[mes] for fila in matriz) for mes in range(len(meses))]
+    matriz.append(subtotales)
+    id_clientes.append("SUBTOTAL")  # Etiqueta para la fila adicional
+    
+    return matriz, id_clientes, meses
+
+def mostrar_matriz_dinero(matriz, id_clientes, meses):
+    """
+    Muestra la matriz de depósitos por mes en formato de tabla.
+    """
+    if not matriz or not id_clientes:
+        print("No hay datos de depósitos para mostrar.")
+        return
+    
+    # Calcular anchos de columnas
+    ancho_id = max(len("Cliente"), max(len(id) for id in id_clientes)) + 2
+    ancho_mes = 10  # Ajustado para valores como "30000.00"
+    
+    # Encabezado (usando "Plos" en lugar de "Mes")
+    print("Cliente".ljust(ancho_id), end=" || ")
+    for mes in meses:
+        print(f"Plos {mes}".center(ancho_mes), end=" || ")
+    print()
+    
+    # Separador
+    total_ancho = ancho_id + (len(meses) * (ancho_mes + 4)) + 3
+    print("-" * total_ancho)
+    
+    # Filas de datos
+    for i, id_cliente in enumerate(id_clientes):
+        print(id_cliente.ljust(ancho_id), end=" || ")
+        for j, mes in enumerate(meses):
+            # Formatear todos los valores con 2 decimales y ancho fijo
+            valor = matriz[i][j]
+            dinero = f"{valor:.2f}" if valor != 0 else "0.00"
+            # Asegurar que SUBTOTAL tenga el mismo formato
+            if id_cliente == "SUBTOTAL":
+                dinero = dinero.center(ancho_mes)  # Forzar alineación central
+            print(dinero.center(ancho_mes), end=" || ")
+        print()
+
 #----------------------------------------------------------------------------------------------
 # CUERPO PRINCIPAL
 #----------------------------------------------------------------------------------------------
@@ -203,7 +346,7 @@ def main():
             "deposito": 5000.0,
             "estado": "cancelado",
             "metodoPago": "transferencia",
-            "idAccesorio": "05",
+            "idAccesorio": "01",
             "cantidad": "2"
         },
         "05": {
@@ -330,7 +473,7 @@ def main():
         elif opcionMenuPrincipal == "4":
             while True:
                 while True:
-                    opciones = 4
+                    opciones = 5
                     print()
                     print("---------------------------")
                     print("MENÚ PRINCIPAL > Informe")
@@ -338,7 +481,8 @@ def main():
                     print("[1] Informe Total")
                     print("[2] Informe del ultimo Mes")
                     print("[3] Informe de un Mes")
-                    print("[4] proximamente")
+                    print("[4] recuento accesorios por mes")
+                    print("[5] mostrar dinero por mes")
                     print("---------------------------")
                     print("[0] Volver al menú anterior")
                     print("---------------------------")
@@ -360,7 +504,11 @@ def main():
                 elif opcionSubmenu == "3":
                     informe_mes_especifico(Renta)
                 elif opcionSubmenu == "4":
-                    ...
+                    recuento = recuento_accesorios_por_mes(Renta)
+                    mostrar_recuento_accesorios(recuento)
+                elif opcionSubmenu == "5":
+                        matriz, ids, meses = generar_matriz_dinero_por_mes(Renta)
+                        mostrar_matriz_dinero(matriz, ids, meses)
 
         elif opcionMenuPrincipal == "5":
             ...
