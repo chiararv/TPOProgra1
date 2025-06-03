@@ -23,6 +23,92 @@ Pendientes:
 #----------------------------------------------------------------------------------------------
 # FUNCIONES
 #----------------------------------------------------------------------------------------------
+
+def obtenerNuevoValor(etiqueta, valorActual, parseFn=lambda x: x):
+    """
+    Muestra un prompt indicando el valor actual.
+    - Si el usuario pulsa ENTER sin escribir nada, devuelve `valorActual`.
+    - En otro caso, aplica `parseFn` a la entrada y devuelve el resultado.
+
+    Args:
+        etiqueta: Texto a mostrar antes del prompt.
+        valorActual: Valor que se mantendrá si la entrada está vacía.
+        parseFn: Función que transforma la entrada de cadena
+                            en el tipo requerido (str a bool/int/float/etc).
+
+    Returns:
+        El valor convertido o el valor actual si no se ingresa respuesta.
+    """
+    entrada = input(f"{etiqueta} (actual: {valorActual}): ").strip()
+    if entrada:
+        return parseFn(entrada)
+    else:
+        return valorActual
+
+def parseBool(x):
+    """convierte string a boolean"""
+    return x.lower() == "true"
+def parseInt(x): 
+    """convierte string a entero"""
+    return int(x)
+
+def parseFloat(x): 
+    """convierte string a float"""
+    return float(x)
+
+def parseTelefonos(x):
+    """convierte números de teléfono separados por coma a un diccionario"""
+    return {
+        f"telefono{i+1}": t.strip()
+        for i, t in enumerate(x.split(","))
+        if t.strip()
+    }
+def parseColors(texto: str) -> dict:
+    """Convierte 'rojo, azul' ➜ {'color1': 'rojo', 'color2': 'azul'}."""
+    return {f"color{i+1}": c.strip()
+            for i, c in enumerate(texto.split(",")) if c.strip()}
+
+def obtenerEtiqueta(clave: str):
+    '''
+        Retorna la etiqueta de una clave.
+        Parámetros:
+            clave (str): Clave a convertir.
+        Retorna:
+            str: Etiqueta de la clave.
+    '''
+    etiquetas = {
+        # General
+        "nombre":         "Nombre",
+        "activo":         "¿Está activo? (True/False)",
+        
+        # Cliente
+        "idCliente":      "Documento",
+        "tipoDocumento":  "Tipo de documento",
+        "apellido":       "Apellido",
+        "email":          "Email",
+        "fechaNacimiento":"Fecha de nacimiento (YYYY-MM-DD)",
+        "telefonos":      "Teléfonos (separados por coma)",
+        
+        # Renta
+        "idRenta":        "ID de Renta",
+        "dias":           "Cantidad de días",
+        "fechaDevolucion":"Fecha de devolución (AAAA.MM.DD.hh.mm.ss)",
+        "total":          "Total",
+        "deposito":       "Depósito",
+        "estado":         "Estado",
+        "metodoPago":     "Método de pago",
+        "idAccesorio":    "ID de Accesorio",
+        "cantidad":       "Cantidad",
+        
+        # Accesorio
+        "descripcion":    "Descripción",
+        "stock":          "Cantidad en stock del accesorio",
+        "precioUnitario": "Precio unitario",
+        "colores":        "Colores disponibles (separados por coma)"
+    }
+    return etiquetas.get(clave, clave.capitalize())
+
+
 def altaAccesorio(accesorios,codigo,nombre, descripcion, stock, precioUnitario, colores=None, activo=True):
     '''
         Agrega un accesorio al diccionario de accesorios.
@@ -91,7 +177,7 @@ def eliminarAccesorios(accesorios,codigo):
     else:
        print(f"No se encontró un accesorio con el código {codigo}.")
 
-def modificarAccesorio(accesorio, codigo):
+def modificarAccesorio(accesorios: dict, codigo: str) -> dict:
     '''
         Modifica los detalles de un accesorio existente y si tocamos la tecla enter, esa variable no se modifica y queda como esta actualmente al ingreso.
         Parámetros:
@@ -100,58 +186,44 @@ def modificarAccesorio(accesorio, codigo):
         Retorna:
             dict: El diccionario de accesorios actualizado.
     '''
-    if codigo in accesorio:
-        datosActuales = accesorio[codigo]
-        
-        activoEstado = input(f"Ingrese True o False (actual: {datosActuales['activo']}): ").lower()
-        if activoEstado == "":
-            activo = datosActuales['activo']
-        else:
-            activo = True if activoEstado == "true" else False
-
-        nombre = input(f"Ingrese el nombre del accesorio (actual: {datosActuales['nombre']}): ")
-        if nombre == "":
-            nombre = datosActuales['nombre']
-
-        descripcion = input(f"Ingrese la descripción del accesorio (actual: {datosActuales['descripcion']}): ")
-        if descripcion == "":
-            descripcion = datosActuales['descripcion']
-
-        stockInput = input(f"Ingrese el stock del accesorio (actual: {datosActuales['stock']}): ")
-        if stockInput == "":
-            stock = datosActuales['stock']
-        else:
-            stock = int(stockInput)
-
-        precioInput = input(f"Ingrese el precio unitario del accesorio (actual: {datosActuales['precioUnitario']}): ")
-        if precioInput == "":
-            precioUnitario = datosActuales['precioUnitario']
-        else:
-            precioUnitario = float(precioInput)
-
-        coloresInput = input(f"Ingrese los colores del accesorio separados por coma (actual: {list(datosActuales['colores'].values())}): ")
-        if coloresInput == "":
-            colores = datosActuales['colores']
-        else:
-            colores = {f'color{i+1}': color.strip() for i, color in enumerate(coloresInput.split(','))}
-
-        accesorio[codigo] = {
-            'activo': activo,
-            'nombre': nombre,
-            'descripcion': descripcion,
-            'stock': stock,
-            'precioUnitario': precioUnitario,
-            'colores': colores
-        }
-        print(f"Accesorio con código {codigo} modificado exitosamente.")
-    else:
+    if codigo not in accesorios:
         print(f"No se encontró un accesorio con el código {codigo}.")
+        return accesorios
 
-    return accesorio
+    print("Ingrese datos a modificar. ENTER mantiene el valor actual.\n")
+    datos = accesorios[codigo]
 
+    parsers = {
+        "activo":         parseBool,
+        "stock":          parseInt,
+        "precioUnitario": parseFloat,
+        "colores":        parseColors,
+    }
+
+    for campo, valorActual in datos.items():
+        if campo == "codigo":
+            continue
+
+        valorMostrado = (
+            ", ".join(valorActual.values()) if campo == "colores" else valorActual
+        )
+        parseFn = parsers.get(campo, lambda x: x)
+        datos[campo] = obtenerNuevoValor(obtenerEtiqueta(campo),
+                                 valorMostrado,
+                                 parseFn)
+
+    print(f"\nAccesorio con código {codigo} modificado exitosamente.\n")
+    return accesorios
 
 
 def altaRenta(rentas):
+    '''
+        Agrega una renta al diccionario de rentas.
+        Parámetros:
+            rentas (dict): Diccionario de rentas.
+        Retorna:
+            dict: El diccionario de rentas actualizado.
+    '''
     print("--- Alta de Renta ---")
     idRenta = input("Ingrese ID de Renta: ")
     if idRenta in rentas:
@@ -184,6 +256,13 @@ def altaRenta(rentas):
     return rentas
 
 def bajaRenta(rentas):
+    '''
+        Elimina una renta del diccionario de rentas.
+        Parámetros:
+            rentas (dict): Diccionario de rentas.
+        Retorna:
+            dict: El diccionario de rentas actualizado.
+    '''
     print("--- Baja de Renta ---")
     idRenta = input("Ingrese ID de Renta a eliminar: ")
     if idRenta in rentas:
@@ -194,31 +273,44 @@ def bajaRenta(rentas):
     return rentas
 
 def modificarRenta(rentas):
+    """
+    Modifica los datos de una renta existente.
+    Si el ID no existe, informa error y no altera el dict.
+    Args:
+        rentas (dict): diccionario de rentas
+    Returns:
+        dict: el dict `rentas` actualizado
+    """
     print("--- Modificar Renta ---")
-    idRenta = input("Ingrese ID de Renta a modificar: ")
+    idRenta = input("Ingrese ID de Renta a modificar: ").strip()
     if idRenta not in rentas:
         print("ERROR: No se encontró una renta con ese ID.")
         return rentas
 
     renta = rentas[idRenta]
-    print(f"Datos actuales: {renta}")
+    print("Ingrese nuevos valores. ENTER mantiene el actual.\n")
 
-    for clave in renta:
+    parsers = {
+        "dias":    parseInt,
+        "total":   parseFloat,
+        "deposito": parseFloat,
+    }
+
+    for clave, valorActual in renta.items():
         if clave == "idRenta":
             continue
-        nuevoValor = input(f"Modificar '{clave}' (actual: {renta[clave]}) - Enter para mantener: ")
-        if nuevoValor:
-            if clave in ["dias"]:
-                renta[clave] = int(nuevoValor)
-            elif clave in ["total", "deposito"]:
-                renta[clave] = float(nuevoValor)
-            else:
-                renta[clave] = nuevoValor
+        parseFn = parsers.get(clave, lambda x: x)
+        renta[clave] = obtenerNuevoValor(obtenerEtiqueta(clave), valorActual, parseFn)
 
-    print("Renta modificada con éxito.")
+    print(f"\nRenta {idRenta} modificada exitosamente.\n")
     return rentas
 
 def listarRentas(rentas):
+    '''
+        Imprime los detalles de las rentas activas.
+        Parámetros:
+            rentas (dict): Diccionario de rentas.
+    '''
     print("--- Listado de Rentas ---")
     if not rentas:
         print("No hay rentas registradas.")
@@ -229,7 +321,6 @@ def listarRentas(rentas):
 
     for renta in rentas.values():
         print(f"{renta['idRenta']:<5} {renta['idCliente']:<10} {renta['dias']:<5} {renta['fechaDevolucion']:<20} {renta['total']:<10.2f} {renta['deposito']:<10.2f} {renta['estado']:<12} {renta['metodoPago']:<15} {renta['idAccesorio']:<10} {renta['cantidad']:<6}")
-
 
 def obtenerDatosCliente(documento):
     """
@@ -260,7 +351,6 @@ def obtenerDatosCliente(documento):
         "telefonos": telefonos,
         "activo": activo
     }
-
 
 def altaCliente(clientes):
     """
@@ -318,8 +408,6 @@ def listarClientes(clientes):
             continue
         mostrarCliente(cliente, idCliente)
 
-
-
 def eliminarCliente(clientes, documento):
     """
     Elimina el cliente con el documento dado si es que existe.
@@ -336,67 +424,50 @@ def eliminarCliente(clientes, documento):
         print(f"No se encontró un cliente con el documento {documento}.")
     return clientes
 
-def leerCampo(label, valorActual, parseFn=lambda x: x):
-    """
-    Muestra un prompt indicando el valor actual.
-    - Si el usuario pulsa ENTER sin escribir nada, devuelve `valorActual`.
-    - En otro caso, aplica `parseFn` a la entrada y devuelve el resultado.
-
-    Args:
-        label: Texto a mostrar antes del prompt.
-        valorActual: Valor que se mantendrá si la entrada está vacía.
-        parseFn: Función que transforma la entrada de cadena
-                            en el tipo requerido (str a bool/int/float/etc).
-
-    Returns:
-        El valor convertido o el valor actual si no se ingresa respuesta.
-    """
-    entrada = input(f"{label} (actual: {valorActual}): ").strip()
-    if entrada == "":
-        return valorActual
-    return parseFn(entrada)
-
-parseBool    = lambda x: x.lower() == "true"
-parseTelefonos = lambda x: {
-    f"telefono{i+1}": t.strip()
-    for i, t in enumerate(x.split(","))
-    if t.strip()
-}
-
-def modificarCliente(clientes, documento):
+def modificarCliente(clientes: dict, documento: str) -> dict:
     """
     Modifica los datos de un cliente existente.
-    Si se modifica el 'idCliente', actualiza la clave del dict `clientes`.
+    Si se cambia 'idCliente', actualiza la clave principal del dict `clientes`.
+
     Args:
-        clientes (dict): Diccionario de clientes.
-        documento (str): Documento del cliente a modificar.
+        clientes (dict): Diccionario global de clientes.
+        documento (str): Documento (clave) del cliente a modificar.
+
     Returns:
-        dict: El dict `clientes` actualizado.
+        dict: El mismo dict `clientes` actualizado.
     """
-    print("Ingrese datos a modificar, presione ENTER para mantener el valor actual.")
-    datos = clientes[documento]
-  
-    nuevoDoc = leerCampo("Ingrese nuevo documento", datos['idCliente'])
-    if nuevoDoc != datos['idCliente']:
-        datos['idCliente'] = nuevoDoc
-        clientes[nuevoDoc] = datos
-        del clientes[documento]
-        documento = nuevoDoc  
 
-    telefonosActual = ", ".join(datos['telefonos'].values())
-    nuevosTel= leerCampo("Teléfonos", telefonosActual, parseTelefonos)
-    if isinstance(nuevosTel, dict):  
-        datos['telefonos'] = nuevosTel 
+    print("Ingrese datos a modificar. ENTER mantiene el valor actual.\n")
+    cliente = clientes[documento]
 
-    datos['tipoDocumento']  = leerCampo("Tipo de documento",   datos['tipoDocumento'])
-    datos['nombre']        = leerCampo("Nombre",              datos['nombre'])
-    datos['apellido']      = leerCampo("Apellido",            datos['apellido'])
-    datos['email']         = leerCampo("Email",               datos['email'])
-    datos['fechaNacimiento'] = leerCampo("Fecha de nacimiento (YYYY-MM-DD)", datos['fechaNacimiento'])
-    datos['activo']        = leerCampo("¿Está activo? (True/False)", datos['activo'],   parseBool)
+    parsers = {
+        "telefonos": parseTelefonos,
+        "activo":    parseBool,
+    }
+
+    for clave, valorActual in list(cliente.items()):
+        valorActual = (
+            ", ".join(valorActual.values()) if clave == "telefonos" else valorActual
+        )
+
+        parseFn = parsers.get(clave, lambda x: x)
+        nuevoValor = obtenerNuevoValor(obtenerEtiqueta(clave),
+                               valorActual,
+                               parseFn)
+
+        if clave == "telefonos" and isinstance(nuevoValor, dict):
+            cliente[clave] = nuevoValor
+        else:
+            cliente[clave] = nuevoValor
+
+        # Si cambió idCliente, mover la entrada en el dict raíz
+        if clave == "idCliente" and nuevoValor != documento:
+            clientes[nuevoValor] = cliente
+            del clientes[documento]
+            documento = nuevoValor 
 
     print(f"\nCliente {documento} modificado exitosamente.\n")
-    mostrarCliente(datos, documento)
+    mostrarCliente(cliente, documento)
     return clientes
 
 #----------------------------------------------------------------------------------------------
