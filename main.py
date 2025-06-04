@@ -592,7 +592,7 @@ def informeMesActual(rentas):
         print(f"No hay rentas registradas en el mes actual ({mesActual}).")
 
 
-def recuentoAccesoriosPorMes(rentas):
+def recuento_accesorios_por_mes(rentas):
     """
     Genera un recuento de accesorios rentados por mes.
     
@@ -608,58 +608,67 @@ def recuentoAccesoriosPorMes(rentas):
         try:
             # Extraer mes de idRenta (formato: YYYY.MM.DD.HH.MM.SS)
             mes = int(renta["idRenta"].split('.')[1])
-            idAccesorio = renta["idAccesorio"]
+            id_accesorio = renta["idAccesorio"]
             cantidad = int(renta["cantidad"])
             
             # Inicializar estructura si no existe
-            if idAccesorio not in recuento:
-                recuento[idAccesorio] = {m: 0 for m in range(1, 13)}
+            if id_accesorio not in recuento:
+                recuento[id_accesorio] = {m: 0 for m in range(1, 13)}
             
-            recuento[idAccesorio][mes] += cantidad
+            # Sumar cantidad al mes correspondiente
+            recuento[id_accesorio][mes] += cantidad
             
         except Exception as e:
             print(f"Error procesando renta {renta.get('idRenta', '')}: {e}")
     
     return recuento
 
-def mostrarRecuentoAccesorios(recuento):
+def obtener_nombre_mes(mes_numero, year):
+    """
+    Devuelve el nombre del mes abreviado (3 letras) con el año. Ej: ENE.25
+    """
+    meses = [
+        "ENE", "FEB", "MAR", "ABR", "MAY", "JUN",
+        "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"
+    ]
+    return f"{meses[mes_numero-1]}.{str(year)[-2:]}"
+
+def mostrar_recuento_accesorios(recuento, year=2025):
     """
     Muestra el recuento de accesorios por mes en formato de tabla.
-    
-    Args:
-        recuento (dict): Diccionario con el recuento de accesorios por mes
     """
     if not recuento:
         print("No hay datos de accesorios para mostrar.")
         return
     
     # Obtener todos los idAccesorios y ordenarlos
-    idAccesorios = sorted(recuento.keys())
+    id_accesorios = sorted(recuento.keys())
     meses = list(range(1, 13))
     
     # Calcular anchos de columnas
-    anchoId = max(len("Accesorio"), max(len(id) for id in idAccesorios)) + 2
-    anchoMes = 8  # Suficiente para "Mes X" y los valores
+    ancho_id = max(len("Accesorio"), max(len(id) for id in id_accesorios)) + 2
+    ancho_mes = 8  # Suficiente para "ENE.25" y los valores
     
-    # Encabezado
-    print("Accesorio".ljust(anchoId), end=" || ")
+    # Encabezado con año
+    print(f"\nRECUENTO DE ACCESORIOS POR MES - AÑO {year}")
+    print("Accesorio".ljust(ancho_id), end=" || ")
     for mes in meses:
-        print(f"Mes {mes}".center(anchoMes), end=" || ")
+        print(obtener_nombre_mes(mes, year).center(ancho_mes), end=" || ")
     print()
     
     # Separador
-    totalAncho = anchoId + (len(meses) * (anchoMes + 4)) + 3
-    print("-" * totalAncho)
+    total_ancho = ancho_id + (len(meses) * (ancho_mes + 4)) + 3
+    print("-" * total_ancho)
     
     # Filas de datos
-    for idAccesorio in idAccesorios:
-        print(idAccesorio.ljust(anchoId), end=" || ")
+    for id_accesorio in id_accesorios:
+        print(id_accesorio.ljust(ancho_id), end=" || ")
         for mes in meses:
-            cantidad = recuento[idAccesorio].get(mes, 0)
-            print(str(cantidad).center(anchoMes), end=" || ")
+            cantidad = recuento[id_accesorio].get(mes, 0)
+            print(str(cantidad).center(ancho_mes), end=" || ")
         print()
-
-def generarMatrizDineroPorMes(rentas):
+        
+def generar_matriz_dinero_por_mes(rentas):
     """
     Genera una matriz de depósitos por mes.
     
@@ -667,26 +676,26 @@ def generarMatrizDineroPorMes(rentas):
         rentas (dict): Diccionario con todas las rentas
     
     Returns:
-        tuple: (matriz, idClientes, meses)
+        tuple: (matriz, id_clientes, meses)
           - matriz: Lista de listas con los depósitos sumados
-          - idClientes: Lista ordenada de ids de clientes
+          - id_clientes: Lista ordenada de ids de clientes (opcional, se puede cambiarlo a otra categoría si prefiere incluso)
           - meses: Lista de meses (1-12)
     """
     # Recolecta todos los idClientes únicos (para las filas)
-    idClientes = sorted(set(renta["idCliente"] for renta in rentas.values()))
+    id_clientes = sorted(set(renta["idCliente"] for renta in rentas.values()))
     meses = list(range(1, 13))
     
     # Inicializa la matriz con ceros
-    matriz = [[0 for _ in meses] for _ in idClientes]
+    matriz = [[0 for _ in meses] for _ in id_clientes]
     
     # Llena la matriz con los depósitos
     for renta in rentas.values():
         try:
             mes = int(renta["idRenta"].split('.')[1])
-            idCliente = renta["idCliente"]
+            id_cliente = renta["idCliente"]
             deposito = float(renta["deposito"])
             
-            fila = idClientes.index(idCliente)
+            fila = id_clientes.index(id_cliente)
             columna = meses.index(mes)
             matriz[fila][columna] += deposito
         except Exception as e:
@@ -695,43 +704,41 @@ def generarMatrizDineroPorMes(rentas):
     # Añadir fila de subtotales
     subtotales = [sum(fila[mes] for fila in matriz) for mes in range(len(meses))]
     matriz.append(subtotales)
-    idClientes.append("SUBTOTAL")  # Etiqueta para la fila adicional
+    id_clientes.append("SUBTOTAL")  # Etiqueta para la fila adicional
     
-    return matriz, idClientes, meses
+    return matriz, id_clientes, meses
 
-def mostrarMatrizDinero(matriz, idClientes, meses):
+def mostrar_matriz_dinero(matriz, id_clientes, meses, year=2025):
     """
     Muestra la matriz de depósitos por mes en formato de tabla.
     """
-    if not matriz or not idClientes:
+    if not matriz or not id_clientes:
         print("No hay datos de depósitos para mostrar.")
         return
     
     # Calcular anchos de columnas
-    anchoId = max(len("Cliente"), max(len(id) for id in idClientes)) + 2
-    anchoMes = 10  # Ajustado para valores como ej "30000.00"
+    ancho_id = max(len("Cliente"), max(len(id) for id in id_clientes)) + 2
+    ancho_mes = 10  # Ajustado para valores como "30000.00"
     
-    # Encabezado (usando "Plos" en lugar de "Mes")
-    print("Cliente".ljust(anchoId), end=" || ")
+    # Encabezado con año
+    print(f"\nRECUENTO DE DINERO POR MES - AÑO {year}")
+    print("Cliente".ljust(ancho_id), end=" || ")
     for mes in meses:
-        print(f"Plos {mes}".center(anchoMes), end=" || ")
+        print(obtener_nombre_mes(mes, year).center(ancho_mes), end=" || ")
     print()
     
     # Separador
-    totalAncho = anchoId + (len(meses) * (anchoMes + 4)) + 3
-    print("-" * totalAncho)
+    total_ancho = ancho_id + (len(meses) * (ancho_mes + 4)) + 3
+    print("-" * total_ancho)
     
     # Filas de datos
-    for i, idCliente in enumerate(idClientes):
-        print(idCliente.ljust(anchoId), end=" || ")
+    for i, id_cliente in enumerate(id_clientes):
+        print(id_cliente.ljust(ancho_id), end=" || ")
         for j, mes in enumerate(meses):
             # Formatear todos los valores con 2 decimales y ancho fijo
             valor = matriz[i][j]
             dinero = f"{valor:.2f}" if valor != 0 else "0.00"
-            # Asegurar que SUBTOTAL tenga el mismo formato
-            if idCliente == "SUBTOTAL":
-                dinero = dinero.center(anchoMes)  # Forzar alineación central
-            print(dinero.center(anchoMes), end=" || ")
+            print(dinero.center(ancho_mes), end=" || ")
         print()
 
 
@@ -1177,11 +1184,11 @@ def main():
                 elif opcionSubmenu == "3":
                     informeMesEspecifico(rentas)
                 elif opcionSubmenu == "4":
-                    recuento = recuentoAccesoriosPorMes(rentas)
-                    mostrarRecuentoAccesorios(recuento)
+                    recuento = recuento_accesorios_por_mes(rentas)
+                    mostrar_recuento_accesorios(recuento, year=2025)
                 elif opcionSubmenu == "5":
-                    matriz, ids, meses = generarMatrizDineroPorMes(rentas)
-                    mostrarMatrizDinero(matriz, ids, meses)
+                    matriz, ids, meses = generar_matriz_dinero_por_mes(rentas)
+                    mostrar_matriz_dinero(matriz, ids, meses, year=2025)
 
         elif opcionMenuPrincipal == "5":
             ...
