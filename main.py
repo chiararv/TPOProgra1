@@ -240,7 +240,7 @@ def altaRenta(rentas):
     '''
     print("--- Alta de Renta ---")
     while True:
-        idRenta = input("Ingrese ID de Renta (o -1 para terminar): ")
+        idRenta = input("Ingrese ID de Renta, siguiente formato. AAAA-MM-DD hh:mm:ss (o -1 para terminar): ")
         if idRenta == '-1':
             break
         if idRenta in rentas:
