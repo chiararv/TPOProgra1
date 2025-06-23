@@ -77,20 +77,23 @@ def listarAccesorios(accesorios):
 
 def eliminarAccesorios(accesorios,codigo):
     '''
-        Elimina un accesorio del diccionario de accesorios.
-        Parametros:
+        Marca como inactivo un accesorio en lugar de eliminarlo físicamente.
+        Parámetros:
             accesorios (dict): Diccionario de accesorios.
-            codigo (str): Código del accesorio a eliminar.
+            codigo (str): Código del accesorio a "eliminar".
         Retorna:
             dict: El diccionario de accesorios actualizado.
     '''
-    for clave in accesorios.keys():
-        if clave == codigo:
-            del accesorios[codigo]
-            print(f"Accesorio con código {codigo} eliminado exitosamente.")
-            return accesorios
+    if codigo in accesorios:
+        if accesorios[codigo]['activo'] == False:
+            print(f"El accesorio con código {codigo} ya estaba inactivo.")
+        else:
+            accesorios[codigo]['activo'] = False
+            print(f"Accesorio con código {codigo} marcado como inactivo.")
     else:
-       print(f"No se encontró un accesorio con el código {codigo}.")
+        print(f"No se encontró un accesorio con el código {codigo}.")
+    
+    return accesorios
 
 def modificarAccesorio(accesorio, codigo):
     '''
@@ -118,17 +121,32 @@ def modificarAccesorio(accesorio, codigo):
         if descripcion == "":
             descripcion = datosActuales['descripcion']
 
-        stockInput = input(f"Ingrese el stock del accesorio (actual: {datosActuales['stock']}): ")
-        if stockInput == "":
-            stock = datosActuales['stock']
-        else:
-            stock = int(stockInput)
+        while True:
+            stockInput = input(f"Ingrese el stock del accesorio (actual: {datosActuales['stock']}): ")
+            if stockInput == "":
+                stock = datosActuales['stock']
+                break
+            try: 
+                stock = int(stockInput)
+                if stock < 0:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Stock invalido. Ingrese un numero entero mayor o igual a 0")
+                
 
-        precioInput = input(f"Ingrese el precio unitario del accesorio (actual: {datosActuales['precioUnitario']}): ")
-        if precioInput == "":
-            precioUnitario = datosActuales['precioUnitario']
-        else:
-            precioUnitario = float(precioInput)
+        while True:
+            precioInput = input(f"Ingrese el precio unitario del accesorio (actual: {datosActuales['precioUnitario']}): ")
+            if precioInput == "":
+                precioUnitario = datosActuales['precioUnitario']
+                break
+            try:
+                precioUnitario = float(precioInput)
+                if precioUnitario < 0:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Precio inválido. Ingrese un número positivo.")
 
         coloresInput = input(f"Ingrese los colores del accesorio separados por coma (actual: {list(datosActuales['colores'].values())}): ")
         if coloresInput == "":
@@ -398,24 +416,48 @@ def main():
                 
                 elif opcionSubmenu == "1":   # Opción 1 del submenú
                     while True:
-                        # Ingresar accesorio y el  -1 para terminar
+                        # Ingresar accesorio y el -1 para terminar
                         codigo = input("Ingrese el código del accesorio (o '-1' para terminar): ")
                         if codigo == '-1':
                             break
                         while codigo in accesorios:
                             print("El accesorio ya existe. No se puede agregar.")
                             codigo = input("Ingrese un nuevo código para el accesorio: ")
-                        activo = input("Ingrese True o False: ").lower()
-                        if activo == "true":
-                            activo = True
-                        else:
-                            activo = False
-                        nombre = input("Ingrese el nombre del accesorio: ")
-                        descripcion = input("Ingrese la descripción del accesorio: ")
-                        stock = int(input("Ingrese el stock del accesorio: "))
-                        precioUnitario = float(input("Ingrese el precio unitario del accesorio: "))
+                        
+                        activo = input("Ingrese True o False: ").strip().lower()
+                        while activo not in ['true', 'false']:
+                            activo = input("Entrada invalida. Ingrese 'True o 'False: ").strip().lower()
+                        activo = (activo == "true") 
+                        
+                        nombre = input("Ingrese el nombre del accesorio: ").strip()
+                        while nombre == "":
+                            nombre = input("El nombre no puede estar vacio. Ingrese el nombre del accesorio: ").strip()
+                        
+                        descripcion = input("Ingrese la descripción del accesorio: ").strip()
+                        while descripcion == "":
+                            descripcion = input("Ingrese la descripción del accesorio: ").strip()
+                        
+                        while True: 
+                            try: 
+                                stock = int(input("Ingrese el stock del accesorio: "))
+                                if stock < 0:
+                                    raise ValueError
+                                break
+                            except ValueError:
+                                print("Stock invalido. Ingrese un numero entero mayor o igual a 0")
+                        
+                        while True: 
+                            try: 
+                                precioUnitario = float(input("Ingrese el precio unitario del accesorio: "))
+                                if precioUnitario < 0:
+                                    raise ValueError
+                                break
+                            except ValueError:
+                                print("Precio Invalido. Ingrese un numero positivo")
+                        
                         colores = input("Ingrese los colores del accesorio (separados por comas): ").split(',')
                         colores = {f'color{i+1}': color.strip() for i, color in enumerate(colores)}
+                        
                         # Agregar el accesorio al diccionario
                         altaAccesorio(accesorios, codigo,nombre, descripcion, stock, precioUnitario, colores, activo)
                         print("Accesorio agregado exitosamente.")
