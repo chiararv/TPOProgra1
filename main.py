@@ -658,80 +658,76 @@ def mostrarRecuentoAccesorios(recuento):
             print(str(cantidad).center(anchoMes), end=" || ")
         print()
 
-def generarMatrizDineroPorMes(rentas):
+def generarMatrizDineroPorMes(rentas, anio_filtrado=None):
     """
-    Genera una matriz de depósitos por mes.
+    Genera una matriz de depósitos por mes agrupada por accesorio.
     
     Args:
         rentas (dict): Diccionario con todas las rentas
+        anio_filtrado (int, opcional): Año a filtrar. Si es None, incluye todos.
     
     Returns:
-        tuple: (matriz, idClientes, meses)
-          - matriz: Lista de listas con los depósitos sumados
-          - idClientes: Lista ordenada de ids de clientes
-          - meses: Lista de meses (1-12)
+        tuple: (matriz, idAccesorios, meses)
     """
-    # Recolecta todos los idClientes únicos (para las filas)
-    idClientes = sorted(set(renta["idCliente"] for renta in rentas.values()))
+    idAccesorios = sorted(set(renta["idAccesorio"] for renta in rentas.values()))
     meses = list(range(1, 13))
-    
-    # Inicializa la matriz con ceros
-    matriz = [[0 for _ in meses] for _ in idClientes]
-    
-    # Llena la matriz con los depósitos
+    matriz = [[0 for _ in meses] for _ in idAccesorios]
+
     for renta in rentas.values():
         try:
-            mes = int(renta["idRenta"].split('.')[1])
-            idCliente = renta["idCliente"]
+            fecha = renta["idRenta"].split('.')
+            anio = int(fecha[0])
+            mes = int(fecha[1])
+
+            if anio_filtrado and anio != anio_filtrado:
+                continue
+
+            idAccesorio = renta["idAccesorio"]
             deposito = float(renta["deposito"])
-            
-            fila = idClientes.index(idCliente)
+
+            fila = idAccesorios.index(idAccesorio)
             columna = meses.index(mes)
+
             matriz[fila][columna] += deposito
+
         except Exception as e:
             print(f"Error procesando renta {renta.get('idRenta', '')}: {e}")
-        
-    # Añadir fila de subtotales
+
+    # Subtotales
     subtotales = [sum(fila[mes] for fila in matriz) for mes in range(len(meses))]
     matriz.append(subtotales)
-    idClientes.append("SUBTOTAL")  # Etiqueta para la fila adicional
-    
-    return matriz, idClientes, meses
+    idAccesorios.append("SUBTOTAL")
 
-def mostrarMatrizDinero(matriz, idClientes, meses):
+    return matriz, idAccesorios, meses
+
+
+def mostrarMatrizDinero_porAccesorio(matriz, idAccesorios, meses):
     """
-    Muestra la matriz de depósitos por mes en formato de tabla.
+    Muestra la matriz de depósitos por mes en formato de tabla (por accesorio).
     """
-    if not matriz or not idClientes:
+    if not matriz or not idAccesorios:
         print("No hay datos de depósitos para mostrar.")
         return
-    
-    # Calcular anchos de columnas
-    anchoId = max(len("Cliente"), max(len(id) for id in idClientes)) + 2
-    anchoMes = 10  # Ajustado para valores como ej "30000.00"
-    
-    # Encabezado (usando "Plos" en lugar de "Mes")
-    print("Cliente".ljust(anchoId), end=" || ")
+
+    anchoId = max(len("Accesorio"), max(len(id) for id in idAccesorios)) + 2
+    anchoMes = 10
+
+    # Encabezado
+    print("Accesorio".ljust(anchoId), end=" || ")
     for mes in meses:
-        print(f"Plos {mes}".center(anchoMes), end=" || ")
+        print(f"Mes {mes}".center(anchoMes), end=" || ")
     print()
-    
-    # Separador
-    totalAncho = anchoId + (len(meses) * (anchoMes + 4)) + 3
-    print("-" * totalAncho)
-    
-    # Filas de datos
-    for i, idCliente in enumerate(idClientes):
-        print(idCliente.ljust(anchoId), end=" || ")
+
+    print("-" * (anchoId + (len(meses) * (anchoMes + 4)) + 3))
+
+    for i, idAccesorio in enumerate(idAccesorios):
+        print(idAccesorio.ljust(anchoId), end=" || ")
         for j, mes in enumerate(meses):
-            # Formatear todos los valores con 2 decimales y ancho fijo
             valor = matriz[i][j]
             dinero = f"{valor:.2f}" if valor != 0 else "0.00"
-            # Asegurar que SUBTOTAL tenga el mismo formato
-            if idCliente == "SUBTOTAL":
-                dinero = dinero.center(anchoMes)  # Forzar alineación central
             print(dinero.center(anchoMes), end=" || ")
         print()
+
 
 
 #----------------------------------------------------------------------------------------------
