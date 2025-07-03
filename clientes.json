@@ -1,0 +1,132 @@
+{
+    "41110978": {
+        "idCliente": "41110978",
+        "tipoDocumento": "DNI",
+        "nombre": "Juan",
+        "apellido": "Pérez",
+        "email": "juanperez@gmail.com",
+        "fechaNacimiento": "1990-01-01",
+        "telefonos": {
+            "telefono1": "123456789",
+            "telefono2": "987654321"
+        },
+        "activo": true
+    },
+    "12345678": {
+        "idCliente": "12345678",
+        "tipoDocumento": "DNI",
+        "nombre": "Ana",
+        "apellido": "Gómez",
+        "email": "anagomez@gmail.com",
+        "fechaNacimiento": "1990-01-01",
+        "telefonos": {
+            "telefono1": "123456789",
+            "telefono2": "987654321"
+        },
+        "activo": false
+    },
+    "23456789": {
+        "idCliente": "23456789",
+        "tipoDocumento": "DNI",
+        "nombre": "Carlos",
+        "apellido": "Rodríguez",
+        "email": "carlos.rodriguez@hotmail.com",
+        "fechaNacimiento": "1985-03-15",
+        "telefonos": {
+            "telefono1": "234567890",
+            "telefono2": "876543210"
+        },
+        "activo": true
+    },
+    "34567890": {
+        "idCliente": "34567890",
+        "tipoDocumento": "DNI",
+        "nombre": "María",
+        "apellido": "López",
+        "email": "maria.lopez@yahoo.com",
+        "fechaNacimiento": "1992-07-22",
+        "telefonos": {
+            "telefono1": "345678901",
+            "telefono2": "765432109"
+        },
+        "activo": true
+    },
+    "45678901": {
+        "idCliente": "45678901",
+        "tipoDocumento": "DNI",
+        "nombre": "Roberto",
+        "apellido": "Fernández",
+        "email": "roberto.fernandez@gmail.com",
+        "fechaNacimiento": "1988-11-08",
+        "telefonos": {
+            "telefono1": "456789012",
+            "telefono2": "654321098"
+        },
+        "activo": true
+    },
+    "56789012": {
+        "idCliente": "56789012",
+        "tipoDocumento": "DNI",
+        "nombre": "Laura",
+        "apellido": "Martínez",
+        "email": "laura.martinez@outlook.com",
+        "fechaNacimiento": "1995-04-30",
+        "telefonos": {
+            "telefono1": "567890123",
+            "telefono2": "543210987"
+        },
+        "activo": false
+    },
+    "67890123": {
+        "idCliente": "67890123",
+        "tipoDocumento": "DNI",
+        "nombre": "Diego",
+        "apellido": "García",
+        "email": "diego.garcia@gmail.com",
+        "fechaNacimiento": "1987-09-14",
+        "telefonos": {
+            "telefono1": "678901234",
+            "telefono2": "432109876"
+        },
+        "activo": true
+    },
+    "78901234": {
+        "idCliente": "78901234",
+        "tipoDocumento": "DNI",
+        "nombre": "Sofía",
+        "apellido": "Hernández",
+        "email": "sofia.hernandez@hotmail.com",
+        "fechaNacimiento": "1993-12-05",
+        "telefonos": {
+            "telefono1": "789012345",
+            "telefono2": "321098765"
+        },
+        "activo": true
+    },
+    "89012345": {
+        "idCliente": "89012345",
+        "tipoDocumento": "DNI",
+        "nombre": "Miguel",
+        "apellido": "Torres",
+        "email": "miguel.torres@yahoo.com",
+        "fechaNacimiento": "1991-06-18",
+        "telefonos": {
+            "telefono1": "890123456",
+            "telefono2": "210987654"
+        },
+        "activo": true
+    },
+    "90123456": {
+        "idCliente": "90123456",
+        "tipoDocumento": "DNI",
+        "nombre": "Valentina",
+        "apellido": "Silva",
+        "email": "valentina.silva@gmail.com",
+        "fechaNacimiento": "1994-02-25",
+        "telefonos": {
+            "telefono1": "901234567",
+            "telefono2": "109876543"
+        },
+        "activo": true
+    }
+}

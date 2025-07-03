@@ -1,0 +1,132 @@
+{
+  "01": {
+    "activo": true,
+    "nombre": "Gafas de sol",
+    "descripcion": "Gafas de sol con protección UV",
+    "stock": 10,
+    "precioUnitario": 25.99,
+    "colores": {
+      "color1": "rojo",
+      "color2": "azul",
+      "color3": "negro"
+    }
+  },
+  "02": {
+    "activo": true,
+    "nombre": "Guantes térmicos",
+    "descripcion": "Guantes resistentes al agua con forro interior",
+    "stock": 15,
+    "precioUnitario": 34.5,
+    "colores": {
+      "color1": "negro",
+      "color2": "gris",
+      "color3": "azul"
+    }
+  },
+  "03": {
+    "activo": true,
+    "nombre": "Casco de ski",
+    "descripcion": "Casco liviano con ventilación y ajuste regulable",
+    "stock": 8,
+    "precioUnitario": 89.99,
+    "colores": {
+      "color1": "blanco",
+      "color2": "negro",
+      "color3": "naranja"
+    }
+  },
+  "04": {
+    "activo": true,
+    "nombre": "Pañuelo térmico",
+    "descripcion": "Cuello polar para proteger del frío y viento",
+    "stock": 20,
+    "precioUnitario": 12.0,
+    "colores": {
+      "color1": "azul marino",
+      "color2": "verde militar",
+      "color3": "gris"
+    }
+  },
+  "05": {
+    "activo": true,
+    "nombre": "Mochila impermeable",
+    "descripcion": "Mochila de ski resistente al agua, 20L",
+    "stock": 6,
+    "precioUnitario": 59.9,
+    "colores": {
+      "color1": "negro",
+      "color2": "rojo",
+      "color3": "celeste"
+    }
+  },
+  "06": {
+    "activo": true,
+    "nombre": "Antiparras profesionales",
+    "descripcion": "Antiparras con doble lente y antiempañante",
+    "stock": 12,
+    "precioUnitario": 79.99,
+    "colores": {
+      "color1": "violeta",
+      "color2": "negro",
+      "color3": "verde"
+    }
+  },
+  "07": {
+    "activo": true,
+    "nombre": "Cubrebotas",
+    "descripcion": "Protector térmico y resistente al agua para botas",
+    "stock": 18,
+    "precioUnitario": 22.49,
+    "colores": {
+      "color1": "negro",
+      "color2": "gris oscuro",
+      "color3": "azul"
+    }
+  },
+  "08": {
+    "activo": true,
+    "nombre": "Polainas",
+    "descripcion": "Polainas ajustables para nieve y lluvia",
+    "stock": 9,
+    "precioUnitario": 27.75,
+    "colores": {
+      "color1": "verde oliva",
+      "color2": "negro",
+      "color3": "rojo"
+    }
+  },
+  "09": {
+    "activo": true,
+    "nombre": "Cinturón porta objetos",
+    "descripcion": "Cinturón con bolsillos para llevar celular, llaves y snack",
+    "stock": 25,
+    "precioUnitario": 14.3,
+    "colores": {
+      "color1": "gris",
+      "color2": "azul",
+      "color3": "negro"
+    }
+  },
+  "10": {
+    "activo": true,
+    "nombre": "Protector solar de montaña",
+    "descripcion": "Protección SPF 50+ resistente al agua y al sudor",
+    "stock": 30,
+    "precioUnitario": 9.9,
+    "colores": {
+      "color1": "único"
+    }
+  },
+  "11": {
+    "activo": true,
+    "nombre": "Botella térmica",
+    "descripcion": "Botella de acero inoxidable que conserva el calor",
+    "stock": 14,
+    "precioUnitario": 19.99,
+    "colores": {
+      "color1": "plateado",
+      "color2": "azul",
+      "color3": "negro"
+    }
+  }
+}
