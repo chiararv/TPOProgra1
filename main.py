@@ -504,6 +504,10 @@ def leerArchivo(archivo):
         return {}
     
 def cargarRentasDesdeArchivo(nombre_archivo):
+    """
+    Carga el contenido del archivo JSON de rentas y lo devuelve como un diccionario.
+    Si el archivo no existe o está vacío/mal formado, devuelve un diccionario vacío.
+    """
     try:
         f = open(nombre_archivo, mode='r', encoding='utf-8')
         rentas = json.load(f)
@@ -514,6 +518,11 @@ def cargarRentasDesdeArchivo(nombre_archivo):
 
 
 def guardarRentasEnArchivo(nombre_archivo, rentas):
+    """
+    Guarda el diccionario de rentas en el archivo JSON indicado.
+    Sobrescribe completamente el contenido anterior del archivo.
+    """
+
     try:
         f = open(nombre_archivo, mode='w', encoding='utf-8')
         json.dump(rentas, f, ensure_ascii=False, indent=4)
