@@ -25,16 +25,28 @@ import re
 # FUNCIONES
 #----------------------------------------------------------------------------------------------
 
-def parse_string(x):
+def parseString(x):
+    """
+    Convierte una cadena a minúsculas y elimina espacios en blanco.
+    """
     return x.strip()
 
-def parse_bool(x):
+def parseBool(x):
+    """
+    Convierte una cadena a booleano.
+    """
     return x.lower() == "true"
 
-def es_bool_literal(x):
+def esBoolLiteral(x):
+    """
+    Verifica si una cadena es un booleano literal.
+    """
     return x.lower() in ("true", "false")
 
-def parse_telefonos(x):
+def parseTelefonos(x):
+    """
+    Convierte una cadena de teléfonos separados por comas a un diccionario.
+    """
     if not x or not x.strip():
         return {}
     return {
@@ -43,7 +55,7 @@ def parse_telefonos(x):
         if t.strip()
     }
 
-def validar_email(email):
+def validarEmail(email):
     """
     Valida el formato del email usando regex.
     Args:
@@ -51,6 +63,7 @@ def validar_email(email):
     Returns:
         bool: True si el email es válido, False en caso contrario
     """
+
     try:
         pat = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
         return re.match(pat, email) is not None
@@ -58,7 +71,7 @@ def validar_email(email):
         print(f"Error al validar email: {e}")
         return False
     
-def validar_fecha(fecha):
+def validarFecha(fecha):
     """
     Valida el formato de fecha YYYY-MM-DD.
     Args:
@@ -68,6 +81,13 @@ def validar_fecha(fecha):
     """
     try:
         datetime.strptime(fecha, "%Y-%m-%d")
+        fecha_obj = datetime.strptime(fecha, "%Y-%m-%d")
+        if fecha_obj > datetime.now():
+            print("La fecha de nacimiento no puede ser en el futuro.")
+            return False
+        if fecha_obj < datetime.now() - timedelta(days=120*365):
+            print("La fecha de nacimiento no puede ser anterior a 120 años.")
+            return False
         return True
     except ValueError:
         return False
@@ -75,7 +95,7 @@ def validar_fecha(fecha):
         print(f"Error al validar fecha: {e}")
         return False
 
-def solicitar_input(prompt, validador=None, requerido=True):
+def solicitarInput(prompt, validador=None, requerido=True):
     """
     Solicita input con validación opcional.
     Args:
@@ -116,14 +136,14 @@ def obtenerDatosCliente(documento):
               idCliente, tipoDocumento, nombre, apellido, email,
               fechaNacimiento, telefonos (dict) y activo (bool).
     """
-    tipoDocumento = solicitar_input("Ingrese el tipo de documento (DNI, Pasaporte, etc.): ", parse_string, requerido=True)
-    nombre = solicitar_input("Ingrese el nombre del cliente: ", parse_string, requerido=True)
-    apellido = solicitar_input("Ingrese el apellido del cliente: ", parse_string, requerido=True)
-    email = solicitar_input("Ingrese el email del cliente: ", validar_email, requerido=True)
-    fechaNacimiento = solicitar_input("Ingrese la fecha de nacimiento (YYYY-MM-DD): ", validar_fecha, requerido=True)
-    telefonosRaw = solicitar_input("Ingrese los teléfonos del cliente (separados por comas): ", parse_string, requerido=False)
-    telefonos = parse_telefonos(telefonosRaw) if telefonosRaw else {}
-    activo = solicitar_input("¿El cliente está activo? (True/False): ", es_bool_literal, requerido=True).lower() == "true"
+    tipoDocumento = solicitarInput("Ingrese el tipo de documento (DNI, Pasaporte, etc.): ", parseString, requerido=True)
+    nombre = solicitarInput("Ingrese el nombre del cliente: ", parseString, requerido=True)
+    apellido = solicitarInput("Ingrese el apellido del cliente: ", parseString, requerido=True)
+    email = solicitarInput("Ingrese el email del cliente: ", validarEmail, requerido=True)
+    fechaNacimiento = solicitarInput("Ingrese la fecha de nacimiento (YYYY-MM-DD): ", validarFecha, requerido=True)
+    telefonosRaw = solicitarInput("Ingrese los teléfonos del cliente (separados por comas): ", parseString, requerido=False)
+    telefonos = parseTelefonos(telefonosRaw) if telefonosRaw else {}
+    activo = solicitarInput("¿El cliente está activo? (True/False): ", esBoolLiteral, requerido=True).lower() == "true"
 
     return {
         "idCliente": documento,
@@ -154,7 +174,7 @@ def altaCliente(archivo):
         except (FileNotFoundError): 
             clientes = {}
         while True:
-            documento = solicitar_input("Ingrese el documento del cliente (o -1 para terminar): ", parse_string, requerido=True)
+            documento = solicitarInput("Ingrese el documento del cliente (o -1 para terminar): ", parseString, requerido=True)
             if documento == '-1':
                 break
             if documento in clientes:
@@ -286,7 +306,7 @@ def modificarCliente(archivo, documento):
             print("Ingrese datos a modificar, presione ENTER para mantener el valor actual.")
             datos = clientes[documento]
         
-            nuevoDoc = leerCampo("Ingrese nuevo documento", datos['idCliente'], parse_string)
+            nuevoDoc = leerCampo("Ingrese nuevo documento", datos['idCliente'], parseString)
             if nuevoDoc != datos['idCliente']:
                 datos['idCliente'] = nuevoDoc
                 clientes[nuevoDoc] = datos
@@ -294,19 +314,47 @@ def modificarCliente(archivo, documento):
                 documento = nuevoDoc  
 
             telefonosActual = ", ".join(datos['telefonos'].values())
-            nuevosTel= leerCampo("Teléfonos", telefonosActual, parse_telefonos)
+            nuevosTel= leerCampo("Teléfonos", telefonosActual, parseTelefonos)
             if isinstance(nuevosTel, dict):  
                 datos['telefonos'] = nuevosTel 
 
-            datos['tipoDocumento']  = leerCampo("Tipo de documento",   datos['tipoDocumento'], parse_string)
-            datos['nombre']        = leerCampo("Nombre",              datos['nombre'], parse_string)
-            datos['apellido']      = leerCampo("Apellido",            datos['apellido'], parse_string)
-            datos['email']         = leerCampo("Email",               datos['email'], parse_string)
-            datos['fechaNacimiento'] = leerCampo("Fecha de nacimiento (YYYY-MM-DD)", datos['fechaNacimiento'], parse_string)
+            datos['tipoDocumento']  = leerCampo("Tipo de documento",   datos['tipoDocumento'], parseString)
+            datos['nombre']        = leerCampo("Nombre",              datos['nombre'], parseString)
+            datos['apellido']      = leerCampo("Apellido",            datos['apellido'], parseString)
+            nuevoEmail = leerCampo("Email",               datos['email'], parseString)
+
+            while True:
+                try:
+                    if nuevoEmail and validarEmail(nuevoEmail):
+                        datos['email'] = nuevoEmail
+                        break  # Email is valid
+                    else:
+                        print("Email inválido. Intente nuevamente.")
+                        nuevoEmail = leerCampo("Email", datos['email'], parseString)
+                except Exception as e:
+                    print(f"Error al validar email: {e}")
+                    print("Email inválido. Intente nuevamente.")
+                    nuevoEmail = leerCampo("Email", datos['email'], parseString)
+            
+
+            nuevaFecha = leerCampo("Fecha de nacimiento (YYYY-MM-DD)", datos['fechaNacimiento'], parseString)
+            
+            while True:
+                try:
+                    if nuevaFecha and validarFecha(nuevaFecha):
+                        datos['fechaNacimiento'] = nuevaFecha
+                        break  # Date is valid
+                    else:
+                        print("Fecha inválida. Intente nuevamente.")
+                        nuevaFecha = leerCampo("Fecha de nacimiento (YYYY-MM-DD)", datos['fechaNacimiento'], parseString)
+                except Exception as e:
+                    print(f"Error al validar fecha: {e}")
+                    print("Fecha inválida. Intente nuevamente.")
+                    nuevaFecha = leerCampo("Fecha de nacimiento (YYYY-MM-DD)", datos['fechaNacimiento'], parseString)
             activoNuevo = leerCampo(
                 "¿Está activo? (True/False)",
                 "true" if datos["activo"] else "false",
-                parse_string
+                parseString
             )
             datos["activo"] = activoNuevo.lower() == "true"
 
