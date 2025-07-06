@@ -16,7 +16,7 @@ Pendientes:
 #----------------------------------------------------------------------------------------------
 # MÓDULOS
 #----------------------------------------------------------------------------------------------
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import os
 import re
@@ -503,6 +503,7 @@ def leerArchivo(archivo):
         print("No se pudo abrir el archivo:", e)
         return {}
     
+<<<<<<< HEAD
 
 def mostrarTablaRenta(rentas):
     if not rentas:
@@ -1056,6 +1057,118 @@ def mostrarMatrizDinero(matriz, idAccesorios, meses):
             fila.append(valor.ljust(anchos[f"Mes {mes}"]))
         print(" | ".join(fila))
 
+=======
+def cargarRentasDesdeArchivo(nombre_archivo):
+    """
+    Carga el contenido del archivo JSON de rentas y lo devuelve como un diccionario.
+    Si el archivo no existe o está vacío/mal formado, devuelve un diccionario vacío.
+    """
+    try:
+        f = open(nombre_archivo, mode='r', encoding='utf-8')
+        rentas = json.load(f)
+        f.close()
+        return rentas
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def guardarRentasEnArchivo(nombre_archivo, rentas):
+    """
+    Guarda el diccionario de rentas en el archivo JSON indicado.
+    Sobrescribe completamente el contenido anterior del archivo.
+    """
+
+    try:
+        f = open(nombre_archivo, mode='w', encoding='utf-8')
+        json.dump(rentas, f, ensure_ascii=False, indent=4)
+        f.close()
+    except Exception as e:
+        print(f"Error al guardar rentas: {e}")
+
+def altaRenta(accesorios):
+    """
+        Registra una nueva renta:
+        - Verifica si el ID ya existe
+        - Calcula fecha de devolución y total
+        - Valida stock y actualiza inventario
+        - Guarda la renta en rentas.json
+    """
+
+    rentas = cargarRentasDesdeArchivo("rentas.json")
+    print("--- Alta de Renta ---")
+    idRenta = input("Ingrese ID de Renta: ")
+    if idRenta in rentas:
+        print("ERROR: Ya existe una renta con ese ID.")
+        return
+
+    idCliente = input("Ingrese ID de Cliente: ")
+
+    try:
+        dias = int(input("Ingrese cantidad de días: "))
+    except ValueError:
+        print("Cantidad de días inválida.")
+        return
+
+    idAccesorio = input("Ingrese ID de Accesorio: ")
+    if idAccesorio not in accesorios:
+        print("ERROR: Accesorio no encontrado.")
+        return
+
+    try:
+        cantidad = int(input("Ingrese cantidad: "))
+    except ValueError:
+        print("Cantidad inválida.")
+        return
+
+    try:
+        stockDisponible = int(accesorios[idAccesorio].get("stock", 0))
+    except (ValueError, KeyError):
+        print("Error al leer stock disponible.")
+        return
+
+    if cantidad > stockDisponible:
+        print(f"No hay suficiente stock. Disponible: {stockDisponible}")
+        return
+
+    fechaDevolucion = (datetime.now() + timedelta(days=dias)).strftime("%Y.%m.%d.%H.%M.%S")
+
+    try:
+        precioUnitario = float(accesorios[idAccesorio].get("precioUnitario", 0))
+    except (ValueError, KeyError):
+        print("Error al leer precio unitario.")
+        return
+
+    total = cantidad * precioUnitario * dias
+
+    try:
+        deposito = float(input("Ingrese depósito: "))
+    except ValueError:
+        print("Depósito inválido.")
+        return
+
+    estado = input("Ingrese estado: ")
+    metodoPago = input("Ingrese método de pago: ")
+
+    accesorios[idAccesorio]["stock"] = stockDisponible - cantidad
+
+    rentas[idRenta] = {
+        "idRenta": idRenta,
+        "idCliente": idCliente,
+        "dias": dias,
+        "fecha Devolucion": fechaDevolucion,
+        "total": total,
+        "deposito": deposito,
+        "estado": estado,
+        "metodoPago": metodoPago,
+        "idAccesorio": idAccesorio,
+        "cantidad": str(cantidad)
+    }
+
+    guardarRentasEnArchivo("rentas.json", rentas)
+    print("Renta registrada exitosamente.")
+    print(f"Fecha de devolución calculada: {fechaDevolucion}")
+    print(f"Total calculado automáticamente: ${total:.2f}")
+>>>>>>> c11fbdc89b7475a41fe2f745df4c5d0a9f0972b5
 #----------------------------------------------------------------------------------------------
 # CUERPO PRINCIPAL
 #----------------------------------------------------------------------------------------------
@@ -1330,6 +1443,7 @@ def main():
             "activo": True
         }
     }
+<<<<<<< HEAD
 
 
     renta = {
@@ -1394,6 +1508,132 @@ def main():
         "cantidad": "25"
     }
 }
+=======
+    
+    Renta = {
+        "01": {
+            "idRenta": "01",
+            "idCliente": "01",
+            "dias": 10,
+            "fecha Devolucion": "2025.06.10.12.00.00",
+            "total": 15000.0,
+            "deposito": 20000.0,
+            "estado": "ocupado",
+            "metodoPago": "efectivo",
+            "idAccesorio": "01",
+            "cantidad": "20"
+        },
+        "02": {
+            "idRenta": "02",
+            "idCliente": "02",
+            "dias": 5,
+            "fecha Devolucion": "2025.06.05.15.30.00",
+            "total": 7500.0,
+            "deposito": 10000.0,
+            "estado": "pendiente",
+            "metodoPago": "tarjeta",
+            "idAccesorio": "03",
+            "cantidad": "5"
+        },
+        "03": {
+            "idRenta": "03",
+            "idCliente": "03",
+            "dias": 7,
+            "fecha Devolucion": "2025.06.12.09.45.00",
+            "total": 10500.0,
+            "deposito": 15000.0,
+            "estado": "finalizado",
+            "metodoPago": "efectivo",
+            "idAccesorio": "02",
+            "cantidad": "10"
+        },
+        "04": {
+            "idRenta": "04",
+            "idCliente": "04",
+            "dias": 3,
+            "fecha Devolucion": "2025.06.03.18.00.00",
+            "total": 4500.0,
+            "deposito": 5000.0,
+            "estado": "cancelado",
+            "metodoPago": "transferencia",
+            "idAccesorio": "05",
+            "cantidad": "2"
+        },
+        "05": {
+            "idRenta": "05",
+            "idCliente": "05",
+            "dias": 15,
+            "fecha Devolucion": "2025.06.20.20.00.00",
+            "total": 22500.0,
+            "deposito": 30000.0,
+            "estado": "ocupado",
+            "metodoPago": "tarjeta",
+            "idAccesorio": "04",
+            "cantidad": "25"
+        },
+        "06": {
+            "idRenta": "06",
+            "idCliente": "06",
+            "dias": 8,
+            "fecha Devolucion": "2025.06.14.14.00.00",
+            "total": 9600.0,
+            "deposito": 12000.0,
+            "estado": "ocupado",
+            "metodoPago": "efectivo",
+            "idAccesorio": "01",
+            "cantidad": "12"
+        },
+        "07": {
+            "idRenta": "07",
+            "idCliente": "07",
+            "dias": 4,
+            "fecha Devolucion": "2025.06.06.17.00.00",
+            "total": 3200.0,
+            "deposito": 4000.0,
+            "estado": "pendiente",
+            "metodoPago": "tarjeta",
+            "idAccesorio": "02",
+            "cantidad": "4"
+        },
+        "08": {
+            "idRenta": "08",
+            "idCliente": "08",
+            "dias": 6,
+            "fecha Devolucion": "2025.06.11.10.30.00",
+            "total": 7800.0,
+            "deposito": 10000.0,
+            "estado": "finalizado",
+            "metodoPago": "efectivo",
+            "idAccesorio": "03",
+            "cantidad": "6"
+        },
+        "09": {
+            "idRenta": "09",
+            "idCliente": "09",
+            "dias": 2,
+            "fecha Devolucion": "2025.06.02.13.00.00",
+            "total": 2600.0,
+            "deposito": 3000.0,
+            "estado": "cancelado",
+            "metodoPago": "transferencia",
+            "idAccesorio": "05",
+            "cantidad": "2"
+        },
+        "10": {
+            "idRenta": "10",
+            "idCliente": "10",
+            "dias": 9,
+            "fecha Devolucion": "2025.06.15.16.00.00",
+            "total": 11700.0,
+            "deposito": 15000.0,
+            "estado": "ocupado",
+            "metodoPago": "tarjeta",
+            "idAccesorio": "04",
+            "cantidad": "13"
+        }
+    }
+
+>>>>>>> c11fbdc89b7475a41fe2f745df4c5d0a9f0972b5
     """
     accesorios = leerArchivo("accesorios.json") or {}
     archivoJSONAccesorios = "accesorios.json"
@@ -1571,7 +1811,31 @@ def main():
                 print("\n\n")
         
         elif opcionMenuPrincipal == "3":   # Opción 3 del menú principal
-            ...
+            while True:
+                while True:
+                    opciones = 4
+                    print()
+                    print("---------------------------")
+                    print("MENÚ PRINCIPAL > MENÚ DE RENTAS")
+                    print("---------------------------")
+                    print("[1] Ingresar Renta")
+                    print("---------------------------")
+                    print("[0] Volver al menú anterior")
+                    print("---------------------------")
+                    print()
+
+                    opcionSubmenu = input("Seleccione una opción: ")
+                    if opcionSubmenu in [str(i) for i in range(0, opciones + 1)]:
+                        break
+                    else:
+                        input("Opción inválida. Presione ENTER para volver a seleccionar.")
+                print()
+                if opcionSubmenu == "0":
+                    break
+                elif opcionSubmenu == "1":
+                    altaRenta(accesorios)
+                input("\nPresione ENTER para volver al menú.")
+                print("\n\n")
         
         elif opcionMenuPrincipal == "4":   # Opción 4 del menú principal
             # Cargar los datos de renta desde el archivo JSON

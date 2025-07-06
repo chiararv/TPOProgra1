@@ -9,114 +9,76 @@ import json
 # *****************************************************
 # Pegar a continuación la variable diccionario y sus datos
 
-productos = {
-        "TEX1000": {"activo": True,
-                    "descripcion": "SÁBANA BÁSICA MICROFIBRA 1 1/2 PLAZA",
-                    "stock": 520,
-                    "unitario": 44000.00,
-                    "colores": {"color1": "BLANCO",
-                                "color2": "VERDE",
-                                "color3": "ROSA",
-                                "color4": "GRIS",
-                                },
-                    },
-        "TEX1001": {"activo": True,
-                    "descripcion": "ACOLCHADO PLUS QUEEN",
-                    "stock": 310,
-                    "unitario": 115000.00,
-                    "colores": {"color1": "GRIS",
-                                "color2": "AZUL",
-                                },
-                    },
-        "TEX1002": {"activo": True,
-                    "descripcion": "FUNDA ALMOHADA ALGODÓN EGIPCIO KING",
-                    "stock": 450,
-                    "unitario": 35000.00,
-                    "colores": {"color1": "BLANCO",
-                                "color2": "NATURAL",
-                                "color3": "PERLA",
-                                },
-                    },
-        "TEX1003": {"activo": True,
-                    "descripcion": "JUEGO DE SÁBANAS PERCAL 200 HILOS TWIN",
-                    "stock": 280,
-                    "unitario": 78000.00,
-                    "colores": {"color1": "CELESTE",
-                                "color2": "BLANCO",
-                                "color3": "BEIGE",
-                                },
-                    },
-        "TEX1004": {"activo": True,
-                    "descripcion": "PROTECTOR DE COLCHÓN IMPERMEABLE KING SIZE",
-                    "stock": 150,
-                    "unitario": 52000.00,
-                    "colores": {"color1": "BLANCO",
-                                },
-                    },
-        "TEX1005": {"activo": True,
-                    "descripcion": "CUBRECAMA RÚSTICO TUSOR 2 1/2 PLAZAS",
-                    "stock": 190,
-                    "unitario": 95000.00,
-                    "colores": {"color1": "CRUDO",
-                                "color2": "GRIS TOPO",
-                                "color3": "TERRACOTA",
-                                },
-                    },
-        "TEX1006": {"activo": True,
-                    "descripcion": "ALMOHADA VISCOELÁSTICA CERVICAL STANDARD",
-                    "stock": 300,
-                    "unitario": 62000.00,
-                    "colores": {"color1": "BLANCO",
-                                },
-                    },
-        "TEX1007": {"activo": True,
-                    "descripcion": "EDREDÓN DE PLUMAS SINTÉTICAS QUEEN",
-                    "stock": 120,
-                    "unitario": 135000.00,
-                    "colores": {"color1": "BLANCO",
-                                "color2": "GRIS PERLA",
-                                },
-                    },
-        "TEX1008": {"activo": True,
-                    "descripcion": "SÁBANA AJUSTABLE JERSEY DE ALGODÓN FULL",
-                    "stock": 400,
-                    "unitario": 58000.00,
-                    "colores": {"color1": "ROSA VIEJO",
-                                "color2": "VERDE SECO",
-                                "color3": "BLANCO",
-                                "color4": "MAÍZ",
-                                },
-                    },
-        "TEX1009": {"activo": True,
-                    "descripcion": "MANTA POLAR SOFT ESKIMO KING",
-                    "stock": 250,
-                    "unitario": 71000.00,
-                    "colores": {"color1": "AZUL MARINO",
-                                "color2": "BORDEAUX",
-                                "color3": "CHOCOLATE",
-                                },
-                    },
-        "TEX1010": {"activo": True,
-                    "descripcion": "JUEGO DE TOALLA Y TOALLÓN MICROFIBRA SECADO RÁPIDO",
-                    "stock": 600,
-                    "unitario": 38000.00,
-                    "colores": {"color1": "AQUA",
-                                "color2": "CORAL",
-                                "color3": "GRIS CLARO",
-                                },
-                    },
-            }
-
-
-
+renta = {
+    "01": {
+        "idRenta": "2025.05.10.12.00.00",
+        "idCliente": "01",
+        "dias": 10,
+        "fecha Devolucion": "2025.06.10.12.00.00",
+        "total": 15000.0,
+        "deposito": 20000.0,
+        "estado": "ocupado",
+        "metodoPago": "efectivo",
+        "idAccesorio": "01",
+        "cantidad": "20"
+    },
+    "02": {
+        "idRenta": "2025.05.05.15.30.00",
+        "idCliente": "02",
+        "dias": 5,
+        "fecha Devolucion": "2025.06.05.15.30.00",
+        "total": 7500.0,
+        "deposito": 10000.0,
+        "estado": "pendiente",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "03",
+        "cantidad": "5"
+    },
+    "03": {
+        "idRenta": "2025.05.12.09.45.00",
+        "idCliente": "03",
+        "dias": 7,
+        "fecha Devolucion": "2025.06.12.09.45.00",
+        "total": 10500.0,
+        "deposito": 15000.0,
+        "estado": "finalizado",
+        "metodoPago": "efectivo",
+        "idAccesorio": "02",
+        "cantidad": "10"
+    },
+    "04": {
+        "idRenta": "2025.04.03.18.00.00",
+        "idCliente": "04",
+        "dias": 3,
+        "fecha Devolucion": "2025.05.03.18.00.00",
+        "total": 4500.0,
+        "deposito": 5000.0,
+        "estado": "cancelado",
+        "metodoPago": "transferencia",
+        "idAccesorio": "01",
+        "cantidad": "2"
+    },
+    "05": {
+        "idRenta": "2025.06.20.20.00.00",
+        "idCliente": "05",
+        "dias": 15,
+        "fecha Devolucion": "2025.07.20.20.00.00",
+        "total": 22500.0,
+        "deposito": 30000.0,
+        "estado": "ocupado",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "04",
+        "cantidad": "25"
+    }
+}
 # *****************************************************
 # CARGA DEL DICCIONARIO EN EL ARCHIVO JSON
 # *****************************************************
 # En las siguientes 2 líneas ajustar:
 # - Nombre del nuevo archivo JSON
 # - Nombre de la variable diccionario anterior
-archivoJSON = "productos.json"
-variableDicc= productos
+archivoJSON = "renta.json"
+variableDicc= renta
 
 f = open(archivoJSON, mode='w', encoding="utf-8")
 json.dump(variableDicc, f, ensure_ascii=False, indent=4) 
