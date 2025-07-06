@@ -327,7 +327,7 @@ def modificarCliente(archivo, documento):
                 try:
                     if nuevoEmail and validarEmail(nuevoEmail):
                         datos['email'] = nuevoEmail
-                        break  # Email is valid
+                        break 
                     else:
                         print("Email inválido. Intente nuevamente.")
                         nuevoEmail = leerCampo("Email", datos['email'], parseString)
@@ -343,7 +343,7 @@ def modificarCliente(archivo, documento):
                 try:
                     if nuevaFecha and validarFecha(nuevaFecha):
                         datos['fechaNacimiento'] = nuevaFecha
-                        break  # Date is valid
+                        break 
                     else:
                         print("Fecha inválida. Intente nuevamente.")
                         nuevaFecha = leerCampo("Fecha de nacimiento (YYYY-MM-DD)", datos['fechaNacimiento'], parseString)
