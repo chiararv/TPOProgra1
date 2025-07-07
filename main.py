@@ -897,7 +897,7 @@ def altaRenta(accesorios):
         - Valida stock y actualiza inventario
         - Guarda la renta en rentas.json
     """
-
+    clientes = leerArchivo("clientes.json")  
     rentas = cargarRentasDesdeArchivo("rentas.json")
     print("--- Alta de Renta ---")
     
@@ -906,6 +906,10 @@ def altaRenta(accesorios):
         idRenta = datetime.now().strftime("%Y.%m.%d.%H.%M.%S")
 
     idCliente = input("Ingrese ID de Cliente: ")
+    if idCliente not in clientes or not clientes[idCliente].get("activo", True):
+        print("ERROR: Cliente no encontrado o inactivo.")
+        return
+
 
     try:
         dias = int(input("Ingrese cantidad de días: "))
