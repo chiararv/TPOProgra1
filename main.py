@@ -375,7 +375,22 @@ def modificarCliente(archivo, documento):
 
 def altaAccesorio(archivo,accesorios,codigo,nombre, descripcion, stock, precioUnitario, colores=None, activo=True):
     '''
-        
+    Da de alta un nuevo accesorio y lo guarda en el archivo especificado.
+
+    Args:
+        archivo (str): Ruta al archivo JSON donde se almacenan los accesorios.
+        accesorios (dict): Diccionario con todos los accesorios existentes.
+        codigo (str): Código único del accesorio a agregar.
+        nombre (str): Nombre del accesorio.
+        descripcion (str): Descripción del accesorio.
+        stock (int): Cantidad disponible en stock.
+        precioUnitario (float): Precio unitario del accesorio.
+        colores (list, optional): Lista de colores disponibles. Por defecto es una lista vacía.
+        activo (bool, optional): Estado del accesorio (activo o no). Por defecto es True.
+
+    Returns:
+        None
+
     '''
     try:
         f = open(archivo, mode='r', encoding='utf-8')
@@ -404,7 +419,13 @@ def altaAccesorio(archivo,accesorios,codigo,nombre, descripcion, stock, precioUn
 
 def listarAccesorios(archivo):
     '''
-        
+    Lista todos los accesorios activos almacenados en el archivo JSON.
+
+    Args:
+        archivo (str): Ruta al archivo JSON donde se almacenan los accesorios.
+
+    Returns:
+        None 
     '''
     try:
         f = open(archivo, mode='r', encoding='utf-8')
@@ -412,27 +433,33 @@ def listarAccesorios(archivo):
         f.close()
 
         for codigo, accesorio in accesorio.items():
-            print(f"Código: {codigo}")
-            print(f"Activo: {accesorio['activo']}")
             if accesorio['activo'] == False:
-                print("El accesorio no está activo.")
+                break
+            else:
+                print(f"Código: {codigo}")
+                print(f"Activo: {accesorio['activo']}")
+                print(f"Nombre: {accesorio['nombre']}")
+                print(f"Descripción: {accesorio['descripcion']}")
+                print(f"Stock: {accesorio['stock']}")
+                print(f"Precio Unitario: ${accesorio['precioUnitario']:.2f}")
+                print("Colores:")
+                for claveColor, valorColor in accesorio['colores'].items():
+                    print(f"  {claveColor}: {valorColor}")
                 print("-" * 40)
-                continue
-            print(f"Nombre: {accesorio['nombre']}")
-            print(f"Descripción: {accesorio['descripcion']}")
-            print(f"Stock: {accesorio['stock']}")
-            print(f"Precio Unitario: ${accesorio['precioUnitario']:.2f}")
-            print("Colores:")
-            for claveColor, valorColor in accesorio['colores'].items():
-                print(f"  {claveColor}: {valorColor}")
-            print("-" * 40)
     
     except(FileNotFoundError, OSError) as detalle:
         print("Error al intentar abrir archivo(s):", detalle)
 
 def eliminarAccesorios(archivo,codigo):
     '''
-      
+    Marca un accesorio como inactivo en el archivo, usando su código.
+
+    Args:
+        archivo (str): Ruta al archivo JSON donde se almacenan los accesorios.
+        codigo (str): Código del accesorio a marcar como inactivo.
+
+    Returns:
+        None
     '''
     try:
         f = open(archivo, mode='r', encoding='utf-8')
@@ -456,7 +483,14 @@ def eliminarAccesorios(archivo,codigo):
 
 def modificarAccesorio(archivo, codigo):
     '''
-        
+    Modifica los datos de un accesorio existente, permitiendo actualizar sus atributos.
+
+    Args:
+        archivo (str): Ruta al archivo JSON donde se almacenan los accesorios.
+        codigo (str): Código del accesorio a modificar.
+
+    Returns:
+        None
     '''
     try:
         f = open(archivo, mode='r', encoding='utf-8')
