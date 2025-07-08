@@ -1256,211 +1256,223 @@ def main():
 
 
     renta = {
-        "2025.05.10.12.00.00": {
-            "idRenta": "2025.05.10.12.00.00",
-            "idCliente": "01",
-            "dias": 10,
-            "fecha Devolucion": "2025.06.10.12.00.00",
-            "total": 15000.0,
-            "deposito": 20000.0,
-            "estado": "ocupado",
-            "metodoPago": "efectivo",
-            "idAccesorio": "01",
-            "cantidad": "20"
-        },
-        "2025.05.05.15.30.00": {
-            "idRenta": "2025.05.05.15.30.00",
-            "idCliente": "02",
-            "dias": 5,
-            "fecha Devolucion": "2025.06.05.15.30.00",
-            "total": 7500.0,
-            "deposito": 10000.0,
-            "estado": "pendiente",
-            "metodoPago": "tarjeta",
-            "idAccesorio": "03",
-            "cantidad": "5"
-        },
-        "2025.05.12.09.45.00": {
-            "idRenta": "2025.05.12.09.45.00",
-            "idCliente": "03",
-            "dias": 7,
-            "fecha Devolucion": "2025.06.12.09.45.00",
-            "total": 10500.0,
-            "deposito": 15000.0,
-            "estado": "finalizado",
-            "metodoPago": "efectivo",
-            "idAccesorio": "02",
-            "cantidad": "10"
-        },
-        "2025.04.03.18.00.00": {
-            "idRenta": "2025.04.03.18.00.00",
-            "idCliente": "04",
-            "dias": 3,
-            "fecha Devolucion": "2025.05.03.18.00.00",
-            "total": 4500.0,
-            "deposito": 5000.0,
-            "estado": "cancelado",
-            "metodoPago": "transferencia",
-            "idAccesorio": "01",
-            "cantidad": "2"
-        },
-        "2025.06.20.20.00.00": {
-            "idRenta": "2025.06.20.20.00.00",
-            "idCliente": "05",
-            "dias": 15,
-            "fecha Devolucion": "2025.07.20.20.00.00",
-            "total": 22500.0,
-            "deposito": 30000.0,
-            "estado": "ocupado",
-            "metodoPago": "tarjeta",
-            "idAccesorio": "04",
-            "cantidad": "25"
-        },
-        "2025.01.15.10.30.00": {
-            "idRenta": "2025.01.15.10.30.00",
-            "idCliente": "06",
-            "dias": 7,
-            "fecha Devolucion": "2025.01.22.10.30.00",
-            "total": 8000.0,
-            "deposito": 10000.0,
-            "estado": "ocupado",
-            "metodoPago": "efectivo",
-            "idAccesorio": "02",
-            "cantidad": "4"
-        },
-        "2025.02.08.11.00.00": {
-            "idRenta": "2025.02.08.11.00.00",
-            "idCliente": "07",
-            "dias": 5,
-            "fecha Devolucion": "2025.02.13.11.00.00",
-            "total": 6000.0,
-            "deposito": 8000.0,
-            "estado": "finalizado",
-            "metodoPago": "tarjeta",
-            "idAccesorio": "01",
-            "cantidad": "3"
-        },
-        "2025.03.22.09.00.00": {
-            "idRenta": "2025.03.22.09.00.00",
-            "idCliente": "08",
-            "dias": 10,
-            "fecha Devolucion": "2025.04.01.09.00.00",
-            "total": 12000.0,
-            "deposito": 15000.0,
-            "estado": "ocupado",
-            "metodoPago": "efectivo",
-            "idAccesorio": "03",
-            "cantidad": "6"
-        },
-        "2025.07.10.14.00.00": {
-            "idRenta": "2025.07.10.14.00.00",
-            "idCliente": "09",
-            "dias": 8,
-            "fecha Devolucion": "2025.07.18.14.00.00",
-            "total": 10000.0,
-            "deposito": 12000.0,
-            "estado": "pendiente",
-            "metodoPago": "transferencia",
-            "idAccesorio": "04",
-            "cantidad": "5"
-        },
-        "2025.08.05.16.30.00": {
-            "idRenta": "2025.08.05.16.30.00",
-            "idCliente": "10",
-            "dias": 12,
-            "fecha Devolucion": "2025.08.17.16.30.00",
-            "total": 14000.0,
-            "deposito": 18000.0,
-            "estado": "ocupado",
-            "metodoPago": "tarjeta",
-            "idAccesorio": "02",
-            "cantidad": "7"
-        },
-        "2025.09.01.10.00.00": {
-            "idRenta": "2025.09.01.10.00.00",
-            "idCliente": "11",
-            "dias": 4,
-            "fecha Devolucion": "2025.09.05.10.00.00",
-            "total": 4000.0,
-            "deposito": 5000.0,
-            "estado": "finalizado",
-            "metodoPago": "efectivo",
-            "idAccesorio": "01",
-            "cantidad": "2"
-        },
-        "2025.10.18.08.00.00": {
-            "idRenta": "2025.10.18.08.00.00",
-            "idCliente": "12",
-            "dias": 6,
-            "fecha Devolucion": "2025.10.24.08.00.00",
-            "total": 7200.0,
-            "deposito": 9000.0,
-            "estado": "ocupado",
-            "metodoPago": "efectivo",
-            "idAccesorio": "03",
-            "cantidad": "3"
-        },
-        "2025.11.11.13.00.00": {
-            "idRenta": "2025.11.11.13.00.00",
-            "idCliente": "13",
-            "dias": 9,
-            "fecha Devolucion": "2025.11.20.13.00.00",
-            "total": 11000.0,
-            "deposito": 14000.0,
-            "estado": "pendiente",
-            "metodoPago": "transferencia",
-            "idAccesorio": "04",
-            "cantidad": "6"
-        },
-        "2025.12.03.17.00.00": {
-            "idRenta": "2025.12.03.17.00.00",
-            "idCliente": "14",
-            "dias": 7,
-            "fecha Devolucion": "2025.12.10.17.00.00",
-            "total": 9500.0,
-            "deposito": 11000.0,
-            "estado": "ocupado",
-            "metodoPago": "tarjeta",
-            "idAccesorio": "02",
-            "cantidad": "4"
-        },
-        "2025.07.26.19.49.37": {
-            "idRenta": "2025.07.26.19.49.37",
-            "idCliente": "07",
-            "dias": 20,
-            "fecha Devolucion": "2025.07.26.19.49.37",
-            "total": 3148.5999999999995,
-            "deposito": 20000.0,
-            "estado": "pendiente",
-            "metodoPago": "efectivo",
-            "idAccesorio": "07",
-            "cantidad": "7"
-        },
-        "2025.07.06.20.02.05": {
-            "idRenta": "2025.07.06.20.02.05",
-            "idCliente": "08",
-            "dias": 20,
-            "fecha Devolucion": "2025.07.26.20.02.22",
-            "total": 3148.5999999999995,
-            "deposito": 20000.0,
-            "estado": "pendiente",
-            "metodoPago": "tarjeta",
-            "idAccesorio": "07",
-            "cantidad": "7"
-        },
-        "2025.07.06.20.10.17": {
-            "idRenta": "2025.07.06.20.10.17",
-            "idCliente": "07",
-            "dias": 20,
-            "fecha Devolucion": "2025.07.26.20.10.26",
-            "total": 3148.5999999999995,
-            "deposito": 27000.0,
-            "estado": "activa",
-            "metodoPago": "efectivo",
-            "idAccesorio": "07",
-            "cantidad": "7"
-        }
+    "2025.05.10.12.00.00": {
+        "idRenta": "2025.05.10.12.00.00",
+        "idCliente": "89012345",
+        "dias": 10,
+        "fecha Devolucion": "2025.06.10.12.00.00",
+        "total": 15000.0,
+        "deposito": 20000.0,
+        "estado": "ocupado",
+        "metodoPago": "efectivo",
+        "idAccesorio": "01",
+        "cantidad": "20"
+    },
+    "2025.05.05.15.30.00": {
+        "idRenta": "2025.05.05.15.30.00",
+        "idCliente": "41110978",
+        "dias": 5,
+        "fecha Devolucion": "2025.06.05.15.30.00",
+        "total": 7500.0,
+        "deposito": 10000.0,
+        "estado": "pendiente",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "03",
+        "cantidad": "5"
+    },
+    "2025.05.12.09.45.00": {
+        "idRenta": "2025.05.12.09.45.00",
+        "idCliente": "12345678",
+        "dias": 7,
+        "fecha Devolucion": "2025.06.12.09.45.00",
+        "total": 10500.0,
+        "deposito": 15000.0,
+        "estado": "finalizado",
+        "metodoPago": "efectivo",
+        "idAccesorio": "02",
+        "cantidad": "10"
+    },
+    "2025.04.03.18.00.00": {
+        "idRenta": "2025.04.03.18.00.00",
+        "idCliente": "89012345",
+        "dias": 3,
+        "fecha Devolucion": "2025.05.03.18.00.00",
+        "total": 4500.0,
+        "deposito": 5000.0,
+        "estado": "cancelado",
+        "metodoPago": "transferencia",
+        "idAccesorio": "01",
+        "cantidad": "2"
+    },
+    "2025.06.20.20.00.00": {
+        "idRenta": "2025.06.20.20.00.00",
+        "idCliente": "34567890",
+        "dias": 15,
+        "fecha Devolucion": "2025.07.20.20.00.00",
+        "total": 22500.0,
+        "deposito": 30000.0,
+        "estado": "ocupado",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "04",
+        "cantidad": "25"
+    },
+    "2025.01.15.10.30.00": {
+        "idRenta": "2025.01.15.10.30.00",
+        "idCliente": "23456789",
+        "dias": 7,
+        "fecha Devolucion": "2025.01.22.10.30.00",
+        "total": 8000.0,
+        "deposito": 10000.0,
+        "estado": "ocupado",
+        "metodoPago": "efectivo",
+        "idAccesorio": "02",
+        "cantidad": "4"
+    },
+    "2025.02.08.11.00.00": {
+        "idRenta": "2025.02.08.11.00.00",
+        "idCliente": "34567890",
+        "dias": 5,
+        "fecha Devolucion": "2025.02.13.11.00.00",
+        "total": 6000.0,
+        "deposito": 8000.0,
+        "estado": "finalizado",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "01",
+        "cantidad": "3"
+    },
+    "2025.03.22.09.00.00": {
+        "idRenta": "2025.03.22.09.00.00",
+        "idCliente": "67890123",
+        "dias": 10,
+        "fecha Devolucion": "2025.04.01.09.00.00",
+        "total": 12000.0,
+        "deposito": 15000.0,
+        "estado": "ocupado",
+        "metodoPago": "efectivo",
+        "idAccesorio": "03",
+        "cantidad": "6"
+    },
+    "2025.07.10.14.00.00": {
+        "idRenta": "2025.07.10.14.00.00",
+        "idCliente": "34567890",
+        "dias": 8,
+        "fecha Devolucion": "2025.07.18.14.00.00",
+        "total": 10000.0,
+        "deposito": 12000.0,
+        "estado": "pendiente",
+        "metodoPago": "transferencia",
+        "idAccesorio": "04",
+        "cantidad": "5"
+    },
+    "2025.08.05.16.30.00": {
+        "idRenta": "2025.08.05.16.30.00",
+        "idCliente": "45678901",
+        "dias": 12,
+        "fecha Devolucion": "2025.08.17.16.30.00",
+        "total": 14000.0,
+        "deposito": 18000.0,
+        "estado": "ocupado",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "02",
+        "cantidad": "7"
+    },
+    "2025.09.01.10.00.00": {
+        "idRenta": "2025.09.01.10.00.00",
+        "idCliente": "56789012",
+        "dias": 4,
+        "fecha Devolucion": "2025.09.05.10.00.00",
+        "total": 4000.0,
+        "deposito": 5000.0,
+        "estado": "finalizado",
+        "metodoPago": "efectivo",
+        "idAccesorio": "01",
+        "cantidad": "2"
+    },
+    "2025.10.18.08.00.00": {
+        "idRenta": "2025.10.18.08.00.00",
+        "idCliente": "67890123",
+        "dias": 6,
+        "fecha Devolucion": "2025.10.24.08.00.00",
+        "total": 7200.0,
+        "deposito": 9000.0,
+        "estado": "ocupado",
+        "metodoPago": "efectivo",
+        "idAccesorio": "03",
+        "cantidad": "3"
+    },
+    "2025.11.11.13.00.00": {
+        "idRenta": "2025.11.11.13.00.00",
+        "idCliente": "78901234",
+        "dias": 9,
+        "fecha Devolucion": "2025.11.20.13.00.00",
+        "total": 11000.0,
+        "deposito": 14000.0,
+        "estado": "pendiente",
+        "metodoPago": "transferencia",
+        "idAccesorio": "04",
+        "cantidad": "6"
+    },
+    "2025.12.03.17.00.00": {
+        "idRenta": "2025.12.03.17.00.00",
+        "idCliente": "34567890",
+        "dias": 7,
+        "fecha Devolucion": "2025.12.10.17.00.00",
+        "total": 9500.0,
+        "deposito": 11000.0,
+        "estado": "ocupado",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "02",
+        "cantidad": "4"
+    },
+    "2025.07.26.19.49.37": {
+        "idRenta": "2025.07.26.19.49.37",
+        "idCliente": "45678901",
+        "dias": 20,
+        "fecha Devolucion": "2025.07.26.19.49.37",
+        "total": 3148.5999999999995,
+        "deposito": 20000.0,
+        "estado": "pendiente",
+        "metodoPago": "efectivo",
+        "idAccesorio": "07",
+        "cantidad": "7"
+    },
+    "2025.07.06.20.02.05": {
+        "idRenta": "2025.07.06.20.02.05",
+        "idCliente": "90123456",
+        "dias": 20,
+        "fecha Devolucion": "2025.07.26.20.02.22",
+        "total": 3148.5999999999995,
+        "deposito": 20000.0,
+        "estado": "pendiente",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "07",
+        "cantidad": "7"
+    },
+    "2025.07.06.20.10.17": {
+        "idRenta": "2025.07.06.20.10.17",
+        "idCliente": "89012345",
+        "dias": 20,
+        "fecha Devolucion": "2025.07.26.20.10.26",
+        "total": 3148.5999999999995,
+        "deposito": 27000.0,
+        "estado": "activa",
+        "metodoPago": "efectivo",
+        "idAccesorio": "07",
+        "cantidad": "7"
+    },
+    "2025.07.06.20.56.35": {
+        "idRenta": "2025.07.06.20.56.35",
+        "idCliente": "89012345",
+        "dias": 20,
+        "fecha Devolucion": "2025.07.26.20.56.43",
+        "total": 3148.5999999999995,
+        "deposito": 20000.0,
+        "estado": "pendiente",
+        "metodoPago": "tarjeta",
+        "idAccesorio": "07",
+        "cantidad": "7"
     }
+}
     """
     accesorios = leerArchivo("accesorios.json") or {}
     archivoJSONAccesorios = "accesorios.json"
@@ -1473,7 +1485,7 @@ def main():
     #----------------------------------------------------------------------------------------------
     while True:
         while True:
-            opciones = 5
+            opciones = 4
             print()
             print("---------------------------")
             print("MENÚ PRINCIPAL")
@@ -1482,7 +1494,6 @@ def main():
             print("[2] Gestión de accesorios")
             print("[3] Gestion de Renta")
             print("[4] Informes")
-            print("[5] Opción 5")
             print("---------------------------")
             print("[0] Salir del programa")
             print("---------------------------")
@@ -1706,9 +1717,6 @@ def main():
                 elif opcionSubmenu == "5":
                     matriz, ids, meses = generarMatrizDineroPorMes(renta)
                     mostrarMatrizDinero(matriz, ids, meses)
-
-        elif opcionMenuPrincipal == "5":   # Opción 5 del menú principal
-            ...
 
         if opcionSubmenu != "0": # Pausa entre opciones. No la realiza si se vuelve de un submenú
             input("\nPresione ENTER para volver al menú.")
