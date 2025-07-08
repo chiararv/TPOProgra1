@@ -254,13 +254,16 @@ def eliminarCliente(archivo, documento):
         f.close()
 
         if documento in clientes:
-            clientes[documento]['activo'] = False
-            f = open(archivo, mode='w', encoding='utf-8')
-            json.dump(clientes, f, ensure_ascii=False, indent=4)
-            f.close()
-            print(f"Cliente con documento {documento} eliminado exitosamente.")
+            if not clientes[documento]['activo']:
+                print(f"El cliente con documento {documento} ya estaba inactivo.")
+            else:
+                clientes[documento]['activo'] = False  # Cambiar a inactivo
+                f = open(archivo, mode='w', encoding='utf-8')
+                json.dump(clientes, f, ensure_ascii=False, indent=4)
+                f.close()
+                print(f"Cliente con documento {documento} eliminado exitosamente.")
         else:
-            print(f"El cliente con documento {documento} ya estaba inactivo.")
+            print(f"El cliente con documento {documento} no existe.")
     except(FileNotFoundError, OSError) as error:
         print("Error al intentar abrir archivo(s):", error)    
 
